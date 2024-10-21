@@ -35,8 +35,9 @@ export class ProfilePage implements OnInit {
     const userId = await this.authService.getUserId(); 
   
     if (userId !== null) {
-      this.userService.getUser(userId).subscribe((data: any) => {
+      this.userService.getUser(userId).subscribe(async (data: any) => {
         this.profile = data?.datos[0] || {};
+        this.profile.profilePhoto = await this.userService.loadProfilePhoto();
       });
     } else {
       console.error('No se encontró un userId válido');

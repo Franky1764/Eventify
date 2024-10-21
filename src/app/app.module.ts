@@ -25,6 +25,7 @@ import { environment } from '../environments/environment';
 import { EventDetailComponent } from './components/event-detail/event-detail.component';
 import { FirebaseService } from './services/firebase.service';
 
+
 @NgModule({
   declarations: [TabsComponent, AppComponent, CreateEventComponent, ProfileEditComponent, EventDetailComponent], 
   imports: [
