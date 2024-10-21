@@ -17,7 +17,35 @@
       <p><strong>Fecha:</strong> {{ event.fechaActividad }}</p>
       <p><strong>Modalidad:</strong> {{ event.modalidad }}</p>
       <p><strong>Tipo de Actividad:</strong> {{ event.tipoActividad }}</p>
-      <p><strong>Ubicación</strong> {{ event.dependecia }}</p>
+      <p><strong>Ubicación:</strong> {{ event.dependencia }}</p> <!-- Corregido: "dependecia" a "dependencia" -->
     </ion-card-content>
   </ion-card>
 </ion-content>
+
+<ion-footer>
+  <ion-grid>
+    <ion-row>
+      <!-- Botón para registrarse -->
+      <ion-col size="4">
+        <ion-button expand="block" color="primary" (click)="registrarse()">
+          Registrarme
+        </ion-button>
+      </ion-col>
+
+      <!-- Botón para editar el evento -->
+      <ion-col size="4">
+        <ion-button expand="block" color="secondary" (click)="editarEvento()">
+          Editar Evento
+        </ion-button>
+      </ion-col>
+
+      <!-- Botón para eliminar el evento -->
+      <ion-col size="4">
+        <ion-button expand="block" color="danger" (click)="eliminarEvento()">
+          Eliminar Evento
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>
+

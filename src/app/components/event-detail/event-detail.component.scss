@@ -1,0 +1,20 @@
+.custom-button {
+    --background: linear-gradient(to right, #9b59b6, #8e44ad); 
+    --color: white;  
+    --border-radius: 20px;  
+    --box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  // Sombra sutil para darle profundidad
+    margin-bottom: 10px;  // Espacio entre botones
+  }
+  
+  ion-button[color="primary"] {
+    background: linear-gradient(to right, #6a5acd, #9370db);  
+  }
+  
+  ion-button[color="secondary"] {
+    background: linear-gradient(to right, #7a519a, #614a95);  
+  }
+  
+  ion-button[color="danger"] {
+    background: linear-gradient(to right, #e74c3c, #c0392b);  
+  }
+  
