@@ -65,6 +65,11 @@ export class FirebaseService {
   }
 
   //CRUD EVENTOS
+
+  getEvents() {
+    const firestore = getFirestore();
+    return collection(firestore, 'events');
+  }
   createEvent(event: Event) {
     return addDoc(collection(getFirestore(), 'events'), event);
   }

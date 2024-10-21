@@ -22,10 +22,12 @@ import { DatabaseService } from './services/database.service';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
+import { EventDetailComponent } from './components/event-detail/event-detail.component';
+import { FirebaseService } from './services/firebase.service';
 
 
 @NgModule({
-  declarations: [TabsComponent, AppComponent, CreateEventComponent, ProfileEditComponent], 
+  declarations: [TabsComponent, AppComponent, CreateEventComponent, ProfileEditComponent, EventDetailComponent], 
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -39,10 +41,12 @@ import { environment } from '../environments/environment';
     AngularFirestoreModule // Inicializar Firebase
   ],
   providers: [
+    FirebaseService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     StorageService,
     DatabaseService
   ],
   bootstrap: [AppComponent],
+
 })
 export class AppModule {}

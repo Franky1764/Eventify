@@ -5,8 +5,8 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let event of events">
+  <ion-list *ngIf="events.length > 0; else noEvents">
+    <ion-item *ngFor="let event of events" (click)="openEventDetail(event)">
       <ion-label>
         <h2>{{ event.tituloEvento }}</h2>
         <p>{{ event.fechaActividad | date }}</p>
@@ -14,4 +14,10 @@
       </ion-label>
     </ion-item>
   </ion-list>
+
+  <ng-template #noEvents>
+    <ion-text class="ion-text-center">
+      <h3>No hay eventos disponibles en este momento.</h3>
+    </ion-text>
+  </ng-template>
 </ion-content>
