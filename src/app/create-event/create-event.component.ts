@@ -20,6 +20,28 @@ export class CreateEventComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+  if (this.event) {
+    this.eventForm = this.formBuilder.group({
+      sede: [this.event.sede, Validators.required],
+      tipoActividad: [this.event.tipoActividad, Validators.required],
+      tituloEvento: [this.event.tituloEvento, Validators.required],
+      fechaActividad: [this.event.fechaActividad, Validators.required],
+      horarioInicio: [this.event.horarioInicio, Validators.required],
+      horarioTermino: [this.event.horarioTermino, Validators.required],
+      dependencia: [this.event.dependencia, Validators.required],
+      modalidad: [this.event.modalidad, Validators.required],
+      docenteRepresentante: [this.event.docenteRepresentante],
+      invitados: [this.event.invitados],
+      directorParticipante: [this.event.directorParticipante],
+      liderParticipante: [this.event.liderParticipante],
+      subliderParticipante: [this.event.subliderParticipante],
+      embajadores: [this.event.embajadores],
+      inscritos: [this.event.inscritos],
+      asistentesPresencial: [this.event.asistentesPresencial],
+      asistentesOnline: [this.event.asistentesOnline],
+      enlaces: [this.event.enlaces]
+    });
+  } else {
     this.eventForm = this.formBuilder.group({
       sede: ['', Validators.required],
       tipoActividad: ['', Validators.required],
@@ -40,12 +62,9 @@ export class CreateEventComponent implements OnInit {
       asistentesOnline: [''],
       enlaces: ['']
     });
-
-    // Si estamos editando, llenamos el formulario con los valores del evento
-    if (this.event) {
-      this.eventForm.patchValue(this.event);
-    }
   }
+}
+
 
   // Método para manejar el envío del formulario
   async onSubmit() {
@@ -79,6 +98,6 @@ export class CreateEventComponent implements OnInit {
       duration: 2000,
       position: 'bottom',
     });
-    toast.present();
+    await toast.present();
   }
 }
