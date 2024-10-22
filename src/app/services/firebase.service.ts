@@ -59,6 +59,10 @@ export class FirebaseService {
     });
   }
 
+updateProfilePhoto(userId: string, photoUrl: string) {
+  return this.firestore.collection('users').doc(userId).update({ 'datos.profilePhoto': photoUrl });
+}
+
   //BASE DE DATOS USUARIOS
   setDocument(path: string, data: any) {
     return setDoc(doc(getFirestore(), path), data);
@@ -91,6 +95,12 @@ export class FirebaseService {
     });
   }
 
-
+  //OBTENER IMAGEN DE USUARIO DESDE FIRESTORE PARA GUARDAR EN MYSQL
+  getProfilePhoto(userId: string): Promise<string> {
+    return this.firestore.collection('users').doc(userId).get().toPromise().then(doc => {
+      const data = doc.data() as { datos: { profilePhoto: string } };
+      return data.datos.profilePhoto;
+    });
+  }
 
 }

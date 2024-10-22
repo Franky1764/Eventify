@@ -1,6 +1,6 @@
 import { AuthService } from './../services/auth.service';
 import { Component, OnInit } from '@angular/core';
-import { ModalController, NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
 import { UserService } from '../services/user.service';
@@ -23,7 +23,6 @@ export class DashboardPage implements OnInit {
   profile: any = {}; 
 
   constructor(
-    private modalController: ModalController,
     private navCtrl: NavController,
     private userService: UserService,
     private authService: AuthService,

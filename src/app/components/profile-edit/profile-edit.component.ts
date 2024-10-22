@@ -43,8 +43,8 @@ export class ProfileEditComponent implements OnInit {
     if (this.profileForm.valid) {
       const loading = await this.utilsSvc.loading();
       await loading.present();
-      const userId = this.authService.getUserId();
-      if (userId !== null) {
+      const userId = await this.authService.getUserId();
+      if (userId) {
         const datos = this.profileForm.value;
         this.userService.updateUser(userId, { datos: [datos] }).then(async (response) => {
           loading.dismiss();

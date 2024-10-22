@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { Capacitor } from '@capacitor/core';
+import { FirebaseService } from './firebase.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +11,8 @@ export class SqliteService {
   private sqlite: SQLiteConnection;
   private db!: SQLiteDBConnection;
   private isDatabaseReady: boolean = false;
+  private firebaseService: FirebaseService;
+  private authService: AuthService;
 
   constructor() {
     this.sqlite = new SQLiteConnection(CapacitorSQLite);
@@ -73,12 +77,18 @@ export class SqliteService {
   async saveProfilePhoto(photoUrl: string): Promise<void> {
     if (!this.isDatabaseReady) {
       console.error('Database is not ready');
-      return null;
+      return;
     }
     try {
       console.log('Attempting to save profile photo to SQLite:', photoUrl);
-      await this.db.run('INSERT OR REPLACE INTO user_profile (id, profilePhoto) VALUES (1, ?)', [photoUrl]);
-      console.log('Profile photo saved to SQLite successfully');
+      const userId = await this.authService.getUserId();
+      await this.db.run('INSERT OR REPLACE INTO user_profile (id, profilePhoto) VALUES (?, ?)', [userId, photoUrl]);
+      console.log('Profile photo saved locally');
+      
+      // Sincronizar con Firebase en segundo plano
+      this.firebaseService.updateProfilePhoto(userId, photoUrl).catch(error => {
+        console.error('Error syncing profile photo with Firebase', error);
+      });
     } catch (error) {
       console.error('Error saving profile photo', error);
     }

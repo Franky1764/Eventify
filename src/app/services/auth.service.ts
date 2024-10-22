@@ -28,7 +28,11 @@ export class AuthService {
     await this.storageService.clearSession();
   }
 
-  getUserId(): string | null {
+  async getUserId(): Promise<string | null> {
+    if (!this.userId) {
+      const user = await this.afAuth.currentUser;
+      this.userId = user?.uid || null;
+    }
     return this.userId;
   }
 
