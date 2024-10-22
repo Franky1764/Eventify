@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import { FirebaseService } from '../../services/firebase.service';
+import { CreateEventComponent } from 'src/app/create-event/create-event.component';
 
 @Component({
   selector: 'app-event-detail',
@@ -28,10 +29,14 @@ export class EventDetailComponent {
   }
 
   // Método para editar el evento
-  editarEvento() {
-    this.showToast('Funcionalidad de edición pendiente.');
-    // Aquí se implementará la lógica para editar el evento (abrir otro modal o navegar a una página de edición)
+  async editarEvento() {
+    const modal = await this.modalController.create({
+      component: CreateEventComponent,  // Reutilizamos el mismo componente de create event
+      componentProps: { event: this.event }  // Pasamos el evento al modal
+    });
+    return await modal.present();
   }
+  
 
   // Método para eliminar el evento
   async eliminarEvento() {

@@ -1,29 +1,30 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { CreateEventComponent } from './create-event/create-event.component';
 import { IonicModule} from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicRouteStrategy } from '@ionic/angular';
-
-import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 
+// Importación de Componentes
+import { CreateEventComponent } from './create-event/create-event.component';
+import { AppComponent } from './app.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
+import { EventDetailComponent } from './components/event-detail/event-detail.component';
 
 // Importar IonicStorageModule
 import { IonicStorageModule } from '@ionic/storage-angular';
 
+// Importación de Servicios
 import { StorageService } from './services/storage.service';
 import { DatabaseService } from './services/database.service';
-
+import { FirebaseService } from './services/firebase.service';
+// Modulos de Firestore
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
-import { EventDetailComponent } from './components/event-detail/event-detail.component';
-import { FirebaseService } from './services/firebase.service';
 
 
 @NgModule({
