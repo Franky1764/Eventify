@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { ModalController, AlertController } from '@ionic/angular';
 import { UtilsService } from 'src/app/services/utils.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
+import { SqliteService } from 'src/app/services/sqlite.service';
 
 @Component({
   selector: 'app-profile-edit',
@@ -16,11 +17,12 @@ export class ProfileEditComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private authService: AuthService,
     private userService: UserService,
     private modalController: ModalController, 
     private alertController: AlertController,
-    private utilsSvc: UtilsService
+    private utilsSvc: UtilsService,
+    private firebaseSvc: FirebaseService,
+    private sqliteService: SqliteService
   ) {
     this.profileForm = this.formBuilder.group({
       nombre: ['', Validators.required],
@@ -43,12 +45,14 @@ export class ProfileEditComponent implements OnInit {
     if (this.profileForm.valid) {
       const loading = await this.utilsSvc.loading();
       await loading.present();
-      const userId = await this.authService.getUserId();
+      const userId = await this.firebaseSvc.getUserId();
       if (userId) {
         const datos = this.profileForm.value;
-        this.userService.updateUser(userId, { datos: [datos] }).then(async (response) => {
+        try {
+          // Actualiza los datos en SQLite
+          await this.sqliteService.updateUserInfo(userId, datos);
           loading.dismiss();
-          console.log('Usuario actualizado', response);
+          console.log('Usuario actualizado');
           const alert = await this.alertController.create({
             header: 'Éxito',
             message: 'Datos actualizados exitosamente.',
@@ -56,9 +60,10 @@ export class ProfileEditComponent implements OnInit {
           });
           await alert.present();
           this.modalController.dismiss(datos); 
-        }).catch((error) => {
+        } catch (error) {
+          loading.dismiss();
           console.error('Error al actualizar el usuario', error);
-        });
+        }
       } else {
         console.error('No hay usuario logueado');
       }

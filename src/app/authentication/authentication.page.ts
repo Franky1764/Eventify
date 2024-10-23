@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { FirebaseService } from '../services/firebase.service';
-import { StorageService } from '../services/storage.service';
-import { User } from '../models/user.model';
+import { FirebaseService } from '../services/firebase.service'; // Importamos FirebaseService
 import { UtilsService } from '../services/utils.service';
+import { User } from '../models/user.model';
 
 @Component({
   selector: 'app-authentication',
@@ -17,9 +15,7 @@ export class AuthenticationPage {
 
   constructor(
     private alertController: AlertController,
-    private router: Router,
-    private storageService: StorageService, // Inyectamos StorageService
-    private firebaseSvc: FirebaseService, // Inyectamos FirebaseService
+    private firebaseService: FirebaseService, // Inyectamos FirebaseService
     private utilsSvc: UtilsService
   ) {
     this.authForm = new FormGroup({
@@ -34,16 +30,13 @@ export class AuthenticationPage {
       await loading.present();
 
       try {
-        const userCredential = await this.firebaseSvc.signIn(this.authForm.value as User);
-        const user = userCredential.user;
-        if (user) {
-          await this.storageService.setSession({ userId: user.uid });
-          this.router.navigate(['/tabs/dashboard']);
-        }
+        const { email, password } = this.authForm.value;
+        await this.firebaseService.signIn({ email, password } as User);
+        
       } catch (error) {
         if (error.code === 'auth/user-not-found') {
           this.showAlert('Usuario no existe');
-        } else if (error.code === 'auth/wrong-password') {
+        } else if (error.code === 'auth/invalid-credential') {
           this.showAlert('Clave incorrecta');
         } else {
           this.showAlert('Error de autenticación');
@@ -51,7 +44,7 @@ export class AuthenticationPage {
             message: error.message,
             duration: 3000,
             color: 'primary'
-          })
+          });
         }
       } finally {
         loading.dismiss();

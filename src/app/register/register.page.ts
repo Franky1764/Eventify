@@ -21,7 +21,7 @@ export class RegisterPage {
     private alertController: AlertController, // Inyectamos AlertController
     private router: Router, // Inyectamos Router
     private utilsSvc: UtilsService, // Inyectamos UtilsService
-    private firebaseSvc: FirebaseService // Inyectamos FirebaseService
+    private firebaseSvc: FirebaseService, // Inyectamos FirebaseService
   ) {
     this.registerForm = this.formBuilder.group({
       uid: [''],
@@ -37,26 +37,11 @@ export class RegisterPage {
       const loading = await this.utilsSvc.loading();
       await loading.present();
 
-      const { username, email, password } = this.registerForm.value;
-      const user: User = {
-        uid: null,
-        username,
-        email,
-        password,
-        nivel: 1, // Valor por defecto
-        datos: [{
-          nombre: "",
-          apellido: "",
-          edad: "",
-          whatsapp: "",
-          carrera: "",
-          sede: "",
-          profilePhoto: ""
-        }] // Array vacío por defecto
-      };
+      const user = this.registerForm.value;
+      const username = this.registerForm.value.username;
 
       try {
-        const userCredential = await this.firebaseSvc.signUp(user);
+        const userCredential = await this.firebaseSvc.signUp(user as User);
         const userId = userCredential.user?.uid;
         if (userId) {
           await this.firebaseSvc.updateUser(username);
@@ -94,32 +79,16 @@ export class RegisterPage {
     if (this.registerForm.valid) {
 
 
-      const { username, email, password } = this.registerForm.value;
-      const user: User = {
-        uid,
-        username,
-        email,
-        password,
-        nivel: 1, // Valor por defecto
-        datos: [{
-          nombre: "",
-          apellido: "",
-          edad: "",
-          whatsapp: "",
-          carrera: "",
-          sede: "",
-          profilePhoto: ""
-        }] // Array vacío por defecto
-      };
+      const username = this.registerForm.value.username;
 
       let path = `users/${uid}`;
       delete this.registerForm.value.password;
       delete this.registerForm.value.confirmPassword;
+      delete this.registerForm.value.uid;
 
       try {
         await this.firebaseSvc.setDocument(path, this.registerForm.value);
         await this.firebaseSvc.updateUser(username);
-        this.utilsSvc.saveInLocalStorage('user', user);
         this.utilsSvc.routerLink('/login');
         this.registerForm.reset();
 

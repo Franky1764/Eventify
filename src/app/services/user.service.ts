@@ -1,7 +1,7 @@
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { User } from '../models/user.model';
 import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core'; // Importa Injector
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { SqliteService } from './sqlite.service';
 
@@ -9,11 +9,23 @@ import { SqliteService } from './sqlite.service';
   providedIn: 'root'
 })
 export class UserService {
+  private injector: Injector;
+  private _sqliteService: SqliteService; // Añadimos una propiedad para SqliteService
+
   constructor(
     private afAuth: AngularFireAuth,
     private firestore: AngularFirestore,
-    private sqliteService: SqliteService
-  ) {}
+    injector: Injector // Inyecta Injector en lugar de SqliteService
+  ) {
+    this.injector = injector;
+  }
+
+  private get sqliteService(): SqliteService {
+    if (!this._sqliteService) {
+      this._sqliteService = this.injector.get(SqliteService);
+    }
+    return this._sqliteService;
+  }
 
   register(user: User): Promise<void> {
     return this.afAuth.createUserWithEmailAndPassword(user.email, user.password)
@@ -23,15 +35,13 @@ export class UserService {
           username: user.username,
           email: user.email,
           nivel: 1,
-          datos: [{
-            nombre: "",
-            apellido: "",
-            edad: "",
-            whatsapp: "",
-            carrera: "",
-            sede: "",
-            profilePhoto: ""
-          }]
+          nombre: "",
+          apellido: "",
+          edad: "",
+          whatsapp: "",
+          carrera: "",
+          sede: "",
+          profilePhoto: ""
         });
       });
   }
@@ -48,25 +58,22 @@ export class UserService {
     return this.firestore.collection('users').doc(userId).update(datos);
   }
 
-  async syncProfilePhoto(userId: string): Promise<void> {
-    const userDoc = await this.firestore.collection('users').doc(userId).get().toPromise();
-    const userData = userDoc.data() as User;
-    const profilePhoto = userData.datos[0]?.profilePhoto;
-    if (profilePhoto) {
-      await this.sqliteService.saveProfilePhoto(profilePhoto);
-    }
-  }
-
-  async loadProfilePhoto(): Promise<string> {
+  async syncProfilePhoto(userId: string): Promise<string> {
     try {
-      return await this.sqliteService.getProfilePhoto();
+      const profilePhoto = await this.sqliteService.getProfilePhoto(userId);
+      return profilePhoto;
     } catch (error) {
-      console.error('Error loading profile photo', error);
+      console.error('Error syncing profile photo', error);
       return '';
     }
   }
 
-  async clearProfilePhoto(): Promise<void> {
-    await this.sqliteService.deleteProfilePhoto();
+  async logoutUser(userId: string): Promise<void> {
+    try {
+      await this.sqliteService.deleteUser(userId);
+      console.log('User logged out successfully');
+    } catch (error) {
+      console.error('Error logging out user:', error);
+    }
   }
 }

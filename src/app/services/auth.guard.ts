@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { FirebaseService } from '../services/firebase.service'; // Importamos FirebaseService
 import { StorageService } from '../services/storage.service';
 
 @Injectable({
@@ -9,20 +9,24 @@ import { StorageService } from '../services/storage.service';
 export class AuthGuard implements CanActivate {
 
   constructor(
-    private authService: AuthService,
+    private firebaseService: FirebaseService, // Usamos FirebaseService
     private router: Router,
     private storageService: StorageService
   ) {}
 
-  canActivate(): Promise<boolean> {
-    return this.storageService.getSession().then(session => {
-      if (session && session.userId) {
-        this.authService.setUserId(session.userId);
+  async canActivate(): Promise<boolean> {
+    const session = await this.storageService.getSession();
+    if (session && session.userId) {
+      const currentUser = await this.firebaseService.getUserId();
+      if (currentUser === session.userId) {
         return true;
       } else {
         this.router.navigate(['/login']);
         return false;
       }
-    });
+    } else {
+      this.router.navigate(['/login']);
+      return false;
+    }
   }
 }

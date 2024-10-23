@@ -1,10 +1,10 @@
-import { AuthService } from './../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
-import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
+import { FirebaseService } from '../services/firebase.service'; // Importamos FirebaseService
+import { SqliteService } from '../services/sqlite.service'; // Importamos SqliteService
 
 @Component({
   selector: 'app-dashboard',
@@ -24,8 +24,8 @@ export class DashboardPage implements OnInit {
 
   constructor(
     private navCtrl: NavController,
-    private userService: UserService,
-    private authService: AuthService,
+    private firebaseService: FirebaseService, // Usamos FirebaseService
+    private sqliteService: SqliteService, // Usamos SqliteService
     private router: Router,
   ) {
     addIcons({ add });
@@ -36,16 +36,20 @@ export class DashboardPage implements OnInit {
   }
 
   async loadProfile() {
-    const userId = await this.authService.getUserId();
-    if (userId !== null) {
-      this.userService.getUser(userId).subscribe(async (data: any) => {
-        if (data && data.datos && data.datos.length > 0) {
-          this.profile = data.datos[0];
-          this.profile.profilePhoto = await this.userService.loadProfilePhoto();
+    try {
+      const userId = await this.sqliteService.getUserIdFromSQLite();
+      if (userId !== null) {
+        const user = await this.sqliteService.getUser(userId);
+        if (user) {
+          this.profile = user;
+          this.profile.profilePhoto = await this.sqliteService.getProfilePhoto(userId);
         } else {
           this.profile = {};
+          console.error('User not found in SQLite');
         }
-      });
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
     }
   }
 

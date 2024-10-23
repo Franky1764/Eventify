@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule} from '@ionic/angular';
@@ -25,8 +25,11 @@ import { FirebaseService } from './services/firebase.service';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
+//jeep/capacitor
+import { defineCustomElements as jeepSqlite } from 'jeep-sqlite/loader';
 
 
+jeepSqlite(window);
 @NgModule({
   declarations: [TabsComponent, AppComponent, CreateEventComponent, ProfileEditComponent, EventDetailComponent], 
   imports: [
@@ -48,6 +51,9 @@ import { environment } from '../environments/environment';
     DatabaseService
   ],
   bootstrap: [AppComponent],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ]
 
 })
 export class AppModule {}

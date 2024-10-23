@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { NavController } from '@ionic/angular';
-import { AuthService } from '../services/auth.service';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ProfileEditComponent } from '../components/profile-edit/profile-edit.component';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { FirebaseService } from '../services/firebase.service'; // Importa FirebaseService
 import { User } from '../models/user.model';
+import { SqliteService } from '../services/sqlite.service';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-profile',
@@ -17,35 +18,39 @@ import { User } from '../models/user.model';
 export class ProfilePage implements OnInit {
   profile: any = {};
   profileImage: any;
+  user: User;
 
   constructor(
     private userService: UserService,
     private navCtrl: NavController,
-    private authService: AuthService,
     private modalController: ModalController,
     private router: Router,
-    private firebaseService: FirebaseService // Inyecta FirebaseService
+    private firebaseService: FirebaseService,
+    private sqliteService: SqliteService,
+    private appComponent: AppComponent
   ) {}
 
   ngOnInit() {
-    this.loadProfile();
+    this.loadUser();
   }
 
-  async loadProfile() {
-    const userId = await this.authService.getUserId(); 
+  async loadUser() {
+    try {
+      const userId = await this.firebaseService.getUserId();
+      const user = await this.sqliteService.getUser(userId);
   
-    if (userId !== null) {
-      this.userService.getUser(userId).subscribe(async (data: any) => {
-        this.profile = data?.datos[0] || {};
-        this.profile.profilePhoto = await this.userService.loadProfilePhoto();
-      });
-    } else {
-      console.error('No se encontró un userId válido');
-      this.profile = {};
+      if (user) {
+        this.user = user;
+        this.profile = this.user;
+        this.router.navigate(['/tabs/dashboard']);
+      } else {
+        console.error('User not found in SQLite');
+      }
+    } catch (error) {
+      console.error('Error loading user:', error);
     }
   }
 
-  
 
   async takePhoto() {
     const image = await Camera.getPhoto({
@@ -54,22 +59,30 @@ export class ProfilePage implements OnInit {
       resultType: CameraResultType.DataUrl,
       source: CameraSource.Prompt // Permite al usuario elegir entre la cámara y la galería
     });
-
+  
     if (image) {
-      const userId = await this.authService.getUserId();
+      const userId = await this.firebaseService.getUserId(); // Usamos FirebaseService
       const photoUrl = await this.firebaseService.uploadImage(image.dataUrl, `profilePhotos/${userId}.jpg`);
-      this.updateProfilePhoto(userId, photoUrl);
+      
+      // Guardar la URL en SQLite
+      await this.sqliteService.updateProfilePhoto(userId, photoUrl);
+      
+      // Actualizar la URL en Firestore
+      await this.firebaseService.updateProfilePhoto(userId, photoUrl);
+      
+      // Actualizar la URL en el perfil
+      this.profile.profilePhoto = photoUrl;
     }
   }
 
   updateProfilePhoto(userId: string, photoUrl: string) {
     this.userService.getUser(userId).subscribe((user: User) => {
-      if (user && user.datos && user.datos.length > 0) {
-        // Clona el objeto datos para evitar mutaciones no deseadas
-        const updatedDatos = { ...user.datos[0], profilePhoto: photoUrl };
-  
-        // Haz un patch con el objeto completo de datos
-        this.userService.updateUser(userId, { datos: [updatedDatos] }).then(() => {
+      if (user) {
+        // Actualiza directamente el campo profilePhoto en el objeto user
+        const updatedUser = { ...user, profilePhoto: photoUrl };
+
+        // Haz un patch con el objeto actualizado
+        this.userService.updateUser(userId, updatedUser).then(() => {
           this.profile.profilePhoto = photoUrl;
         });
       }
@@ -96,7 +109,6 @@ export class ProfilePage implements OnInit {
   }
 
   async logout() {
-    await this.authService.logout(); // Llamar al método logout de AuthService
-    this.router.navigate(['/login']);
+    await this.appComponent.onLogout(); // Llama a la función onLogout de AppComponent
   }
 }
