@@ -4,6 +4,7 @@ import { add } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { User } from '../models/user.model';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,9 +23,13 @@ export class DashboardPage implements OnInit {
   ];
 
   constructor(
+    private platform: Platform,
     private router: Router,
     private userService: UserService
   ) {
+    this.platform.backButton.subscribeWithPriority(10, () => {
+      // No hacer nada al presionar el botón atrás
+    });
     addIcons({ add });
   }
 

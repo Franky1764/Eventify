@@ -36,7 +36,7 @@ export class AuthenticationPage {
         await this.firebaseService.signIn({ email, password } as User);
 
         // Redirigir a la página de Dashboard
-        this.router.navigate(['/tabs/dashboard']);
+        this.router.navigate(['/tabs/dashboard'], { replaceUrl: true });
         
       } catch (error) {
         if (error.code === 'auth/user-not-found') {

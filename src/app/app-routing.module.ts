@@ -27,6 +27,11 @@ const routes: Routes = [
     canActivate: [AuthGuard], // Protegemos la ruta 'tabs' con AuthGuard
     children: [
       {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
         path: 'dashboard',
         loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardPageModule),
         canActivate: [AuthGuard] // Protegemos la ruta 'dashboard' con AuthGuard
