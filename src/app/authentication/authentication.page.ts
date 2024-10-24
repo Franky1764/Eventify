@@ -4,6 +4,7 @@ import { AlertController } from '@ionic/angular';
 import { FirebaseService } from '../services/firebase.service'; // Importamos FirebaseService
 import { UtilsService } from '../services/utils.service';
 import { User } from '../models/user.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-authentication',
@@ -14,6 +15,7 @@ export class AuthenticationPage {
   authForm: FormGroup;
 
   constructor(
+    private router: Router,
     private alertController: AlertController,
     private firebaseService: FirebaseService, // Inyectamos FirebaseService
     private utilsSvc: UtilsService
@@ -32,6 +34,9 @@ export class AuthenticationPage {
       try {
         const { email, password } = this.authForm.value;
         await this.firebaseService.signIn({ email, password } as User);
+
+        // Redirigir a la página de Dashboard
+        this.router.navigate(['/tabs/dashboard']);
         
       } catch (error) {
         if (error.code === 'auth/user-not-found') {

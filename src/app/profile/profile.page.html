@@ -10,7 +10,7 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" class="ion-text-center">
         <ion-avatar>
-          <img *ngIf="profile && profile.profilePhoto; else defaultImage" [src]="profile.profilePhoto" alt="Foto de perfil">
+          <img *ngIf="user && user.profilePhoto; else defaultImage" [src]="user.profilePhoto" alt="Foto de perfil">
           <ng-template #defaultImage>
             <img src="assets/img/profile.png" alt="Foto de perfil por defecto">
           </ng-template>
@@ -22,15 +22,15 @@
     </ion-row>
   </ion-grid>
 
-  <ion-card>
+  <ion-card *ngIf="user">
     <ion-card-header>
-      <ion-card-title>{{ profile.nombre }} {{ profile.apellido }}</ion-card-title>
+      <ion-card-title>{{ user.nombre }} {{ user.apellido }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>Edad: {{ profile.edad }}</p>
-      <p>Whatsapp: +56 {{ profile.whatsapp }}</p>
-      <p>Carrera: {{ profile.carrera }}</p>
-      <p>Sede: {{ profile.sede }}</p>
+      <p>Edad: {{ user.edad }}</p>
+      <p>Whatsapp: +56 {{ user.whatsapp }}</p>
+      <p>Carrera: {{ user.carrera }}</p>
+      <p>Sede: {{ user.sede }}</p>
     </ion-card-content>
   </ion-card>
 

@@ -3,13 +3,12 @@
     <ion-title>Easy MMeeT</ion-title>
     <ion-buttons slot="end" [routerLink]="['../profile']">
       <ion-avatar>
-        <img *ngIf="profile && profile.profilePhoto; else defaultImage" [src]="profile.profilePhoto" alt="Foto de perfil">
+        <img *ngIf="user && user.profilePhoto; else defaultImage" [src]="user.profilePhoto" alt="Foto de perfil">
         <ng-template #defaultImage>
           <img src="assets/img/profile.png" alt="Foto de perfil por defecto">
         </ng-template>
       </ion-avatar>
     </ion-buttons>
-    
   </ion-toolbar>
   <ion-searchbar placeholder="Buscar" showCancelButton="focus"></ion-searchbar>
 </ion-header>
@@ -17,29 +16,29 @@
 <!-- Sección: Categorías -->
 <ion-content [fullscreen]="true"> 
   <ion-text>
-    <h6 *ngIf="profile.nombre; else noProfile">¡Hola {{ profile.nombre }}!, revisa los nuevos eventos de nuestra comunidad.</h6>
+    <h6 *ngIf="user && user.nombre; else noProfile">¡Hola {{ user.nombre }}!, revisa los nuevos eventos de nuestra comunidad.</h6>
     <ng-template #noProfile>
       <h6>Hola!, por favor registra y/o modificar tus datos en el perfil de usuario</h6>
     </ng-template>
   </ion-text>
 
-<hr class="section-divider">
+  <hr class="section-divider">
 
-<ion-text>
-  <h3>Categorías</h3>
-</ion-text>
-<ion-grid>
-  <ion-row class="category-row">
-    <ion-col size="auto" *ngFor="let category of categories" (click)="openCategoryDetails(category.name)">
-      <ion-button class="category-button">
-        <ion-icon slot="icon-only" [name]="category.icon"></ion-icon>
-      </ion-button>
-      <p>{{ category.name }}</p>
-    </ion-col>
-  </ion-row>
-</ion-grid>
+  <ion-text>
+    <h3>Categorías</h3>
+  </ion-text>
+  <ion-grid>
+    <ion-row class="category-row">
+      <ion-col size="auto" *ngFor="let category of categories" (click)="openCategoryDetails(category.name)">
+        <ion-button class="category-button">
+          <ion-icon slot="icon-only" [name]="category.icon"></ion-icon>
+        </ion-button>
+        <p>{{ category.name }}</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-<hr class="section-divider">
+  <hr class="section-divider">
 
   <ion-text class="section-title">
     <h3>Descubre nuevos eventos</h3>
@@ -65,7 +64,7 @@
     </ion-row>
   </ion-grid>
   
-<hr class="section-divider">
+  <hr class="section-divider">
 
   <ion-text class="section-title">
     <h3>Eventos Recomendados</h3>
@@ -91,5 +90,3 @@
     </ion-row>
   </ion-grid>
 </ion-content>
-
-

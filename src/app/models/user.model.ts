@@ -6,7 +6,7 @@ export interface User {
     nivel: number,
     nombre: string,
     apellido: string,
-    edad: string,
+    edad: number,
     whatsapp: string,
     carrera: string,
     sede: string,

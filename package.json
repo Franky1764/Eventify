@@ -5,11 +5,19 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start": "npm run copy:sql:wasm && ng serve",
+    "build:native": "npm run remove:sql:wasm && ng build",
+    "watch": "npm run copy:sql:wasm && ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "ionic:serve:before": "npm run copy:sql:wasm",
+    "copy:sql:wasm": "copyfiles -u 3 node_modules/sql.js/dist/sql-wasm.wasm src/assets",
+    "remove:sql:wasm": "rimraf src/assets/sql-wasm.wasm",
+    "ionic:ios": "npm run remove:sql:wasm && ionic capacitor build ios",
+    "ionic:android": "npm run remove:sql:wasm && ionic capacitor build android",
+    "electron:install": "cd electron && npm install && cd ..",
+    "electron:prepare": "npm run remove:sql:wasm && ng build && npx cap sync @capacitor-community/electron && npx cap copy @capacitor-community/electron",
+    "electron:start": "npm run electron:prepare && cd electron && npm run electron:start"
   },
   "private": true,
   "dependencies": {
@@ -31,6 +39,7 @@
     "@capacitor/haptics": "6.0.1",
     "@capacitor/keyboard": "6.0.2",
     "@capacitor/preferences": "^6.0.2",
+    "@capacitor/splash-screen": "^6.0.2",
     "@capacitor/status-bar": "6.0.1",
     "@firebase/firestore": "^4.7.3",
     "@ionic/angular": "^8.0.0",
@@ -60,6 +69,7 @@
     "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.1",
@@ -71,6 +81,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "rimraf": "^6.0.1",
     "typescript": "~5.4.0"
   },
   "description": "An Ionic project"

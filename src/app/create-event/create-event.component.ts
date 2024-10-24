@@ -83,7 +83,7 @@ export class CreateEventComponent implements OnInit {
   async saveEvent() {
     try {
       // Save event to SQLite
-      await this.sqliteService.saveEvent(this.eventForm.value);
+      //await this.sqliteService.saveEvent(this.eventForm.value);
       // Sync event to Firebase
       if (this.event) {
         await this.firebaseService.updateEvent(this.event.uid, this.eventForm.value);

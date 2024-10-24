@@ -1,10 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserService } from '../../services/user.service';
 import { ModalController, AlertController } from '@ionic/angular';
 import { UtilsService } from 'src/app/services/utils.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { SqliteService } from 'src/app/services/sqlite.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-profile-edit',
@@ -17,12 +17,12 @@ export class ProfileEditComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private userService: UserService,
     private modalController: ModalController, 
     private alertController: AlertController,
     private utilsSvc: UtilsService,
     private firebaseSvc: FirebaseService,
-    private sqliteService: SqliteService
+    private sqliteService: SqliteService,
+    private userService: UserService
   ) {
     this.profileForm = this.formBuilder.group({
       nombre: ['', Validators.required],
@@ -45,12 +45,12 @@ export class ProfileEditComponent implements OnInit {
     if (this.profileForm.valid) {
       const loading = await this.utilsSvc.loading();
       await loading.present();
-      const userId = await this.firebaseSvc.getUserId();
-      if (userId) {
+      const user = this.userService.user;
+      if (user && user.uid) {
         const datos = this.profileForm.value;
         try {
           // Actualiza los datos en SQLite
-          await this.sqliteService.updateUserInfo(userId, datos);
+          await this.sqliteService.updateUser({ ...this.profile, ...datos });
           loading.dismiss();
           console.log('Usuario actualizado');
           const alert = await this.alertController.create({
@@ -68,7 +68,7 @@ export class ProfileEditComponent implements OnInit {
         console.error('No hay usuario logueado');
       }
     } else {
-      console.error('No se encontró un userId válido o el formulario es inválido');
+      console.error('Formulario inválido');
     }
   }
   

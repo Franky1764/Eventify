@@ -1,14 +1,3 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
-  <!-- Solo en web -->
-  <jeep-sqlite></jeep-sqlite>
-  <script>
-    window.addEventListener('DOMContentLoaded', async () => {
-      const jeepSqlite = document.querySelector('jeep-sqlite');
-      if (jeepSqlite) {
-        await customElements.whenDefined('jeep-sqlite');
-        await jeepSqlite.initWebStore();
-      }
-    });
-  </script>
 </ion-app>

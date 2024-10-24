@@ -1,79 +1,47 @@
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { User } from '../models/user.model';
-import { Observable } from 'rxjs';
-import { Injectable, Injector } from '@angular/core'; // Importa Injector
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Injectable } from '@angular/core';
 import { SqliteService } from './sqlite.service';
+import { WritableSignal } from '@angular/core';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private injector: Injector;
-  private _sqliteService: SqliteService; // Añadimos una propiedad para SqliteService
+  user: User | undefined;
 
   constructor(
-    private afAuth: AngularFireAuth,
-    private firestore: AngularFirestore,
-    injector: Injector // Inyecta Injector en lugar de SqliteService
+    private sqliteService: SqliteService
   ) {
-    this.injector = injector;
+    this.loadUser();
   }
 
-  private get sqliteService(): SqliteService {
-    if (!this._sqliteService) {
-      this._sqliteService = this.injector.get(SqliteService);
-    }
-    return this._sqliteService;
-  }
-
-  register(user: User): Promise<void> {
-    return this.afAuth.createUserWithEmailAndPassword(user.email, user.password)
-      .then(userCredential => {
-        const userId = userCredential.user?.uid;
-        return this.firestore.collection('users').doc(userId).set({
-          username: user.username,
-          email: user.email,
-          nivel: 1,
-          nombre: "",
-          apellido: "",
-          edad: "",
-          whatsapp: "",
-          carrera: "",
-          sede: "",
-          profilePhoto: ""
-        });
-      });
-  }
-
-  getUsers(): Observable<User[]> {
-    return this.firestore.collection<User>('users').valueChanges();
-  }
-
-  getUser(userId: string): Observable<User> {
-    return this.firestore.collection('users').doc<User>(userId).valueChanges();
-  }
-
-  updateUser(userId: string, datos: any): Promise<void> {
-    return this.firestore.collection('users').doc(userId).update(datos);
-  }
-
-  async syncProfilePhoto(userId: string): Promise<string> {
+  async loadUser() {
     try {
-      const profilePhoto = await this.sqliteService.getProfilePhoto(userId);
-      return profilePhoto;
+      const users = this.sqliteService.getUser()();
+      if (users.length > 0) {
+        this.user = users[0];
+        console.log('User loaded successfully', this.user);
+      } else {
+        console.log('No users found in the database');
+      }
     } catch (error) {
-      console.error('Error syncing profile photo', error);
-      return '';
+      console.error('Error loading user:', error);
     }
   }
 
-  async logoutUser(userId: string): Promise<void> {
-    try {
-      await this.sqliteService.deleteUser(userId);
-      console.log('User logged out successfully');
-    } catch (error) {
-      console.error('Error logging out user:', error);
+  async logout() {
+    const user = this.user;
+    if (user && user.uid) {
+      try {
+        await this.sqliteService.deleteUserById(user.uid);
+        console.log('User logged out successfully');
+      } catch (error) {
+        console.error('Error logging out user:', error);
+      }
     }
+  }
+
+  updateProfilePhoto(userId: string, photoUrl: string) {
+    return this.sqliteService.updateProfilePhoto(userId, photoUrl);
   }
 }

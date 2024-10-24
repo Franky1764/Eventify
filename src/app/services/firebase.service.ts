@@ -4,12 +4,12 @@ import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, up
 import { User } from '../models/user.model';
 import { Event } from '../models/event.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getFirestore, setDoc, doc, addDoc, updateDoc, deleteDoc, collection } from '@angular/fire/firestore';
+import { getFirestore, setDoc, getDoc, doc, addDoc, updateDoc, deleteDoc, collection } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { finalize } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { SqliteService } from './sqlite.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -52,9 +52,10 @@ export class FirebaseService {
         if (userDoc.exists) {
           const userData = userDoc.data() as User;
           userData.uid = userId; // Asegurarse de que el uid se guarde en userData
-          await this.sqliteService.saveUser(userData); // Guardar el usuario en SQLite
+          console.log('User data:', JSON.stringify(userData));
+          await this.sqliteService.addUser(userData); // Guardar el usuario en SQLite
           await this.setSession(userId);
-          this.router.navigate(['/tabs/dashboard']);
+          // User signed in successfully
         } else {
           console.error('User document not found in Firestore');
         }
@@ -75,20 +76,38 @@ export class FirebaseService {
     return session ? session.userId : null;
   }
 
-  updateUser(displayName: string) {
-    return updateProfile(getAuth().currentUser, { displayName });
-  }
-
   deleteUser() {
     return getAuth().currentUser.delete();
   }
 
-  // Descargar datos del usuario desde Firestore a SQLite
-  async downloadUserData(userId: string) {
-    const userDoc = await this.firestore.collection('users').doc(userId).get().toPromise();
-    const userData = userDoc.data() as User;
-    //await this.sqliteService.saveUser(userData);
+  getUsers(): Observable<User[]> {
+    return this.firestore.collection<User>('users').valueChanges();
   }
+
+  getUser(userId: string): Observable<User> {
+    return this.firestore.collection('users').doc<User>(userId).valueChanges();
+  }
+
+  updateUserInFirestore(user: User) {
+    // Si el usuario ya existe, se actualizan sus datos
+    const existingUser = this.sqliteService.getUser()[0];
+    if (existingUser) {
+      user = { ...existingUser, ...user };
+    }
+    return this.firestore.collection('users').doc(user.uid).update(user);
+  }
+
+  //REGISTRAR DOCUMENTO EN FIRESTORE
+  setDocument(path: string, data: any) {
+    return setDoc(doc(getFirestore(), path), data);
+  }
+
+  getDocument(path: string) {
+    const docRef = doc(getFirestore(), path);
+    return getDoc(docRef);
+  }
+
+
 
   //SUBIR IMAGEN DE PERFIL
   uploadImage(imageData: string, filePath: string): Promise<string> {
@@ -112,10 +131,6 @@ export class FirebaseService {
     return this.firestore.collection('users').doc(userId).update({ 'profilePhoto': photoUrl });
   }
 
-  //BASE DE DATOS USUARIOS
-  setDocument(path: string, data: any) {
-    return setDoc(doc(getFirestore(), path), data);
-  }
 
   //CRUD EVENTOS
 
@@ -136,10 +151,12 @@ export class FirebaseService {
     return deleteDoc(doc(getFirestore(), 'events', eventId));
   }
 
+  //ESTA FUNCION LA USAREMOS PARA OBTENER LOS DATOS DE LA COLECCION EVENTS DE FIRESTORE
   async getDatabaseJson(collectionName: string): Promise<string> {
     const snapshot = await firstValueFrom(this.firestore.collection(collectionName).get());
     const data = snapshot.docs.map(doc => doc.data());
     console.log(JSON.stringify(data));
     return JSON.stringify(data);
   }
+
 }
