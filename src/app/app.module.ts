@@ -42,7 +42,7 @@ jeepSqlite(window);
     // Configurar IonicStorageModule
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule // Inicializar Firebase
+    AngularFirestoreModule.enablePersistence() // Inicializar Firebase
   ],
   providers: [
     FirebaseService,

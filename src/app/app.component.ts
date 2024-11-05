@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { StorageService } from './services/storage.service';
-import { UserService } from './services/user.service';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseService } from './services/firebase.service';
-import { SqliteService } from './services/sqlite.service';
+import { UserService } from './services/user.service';
+import { SqliteService } from './services/sqlite.service'; // Importa SqliteService
 import { SplashScreen } from '@capacitor/splash-screen';
 
 @Component({
@@ -11,47 +10,39 @@ import { SplashScreen } from '@capacitor/splash-screen';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
-
+export class AppComponent {
   constructor(
-    private storageService: StorageService,
-    private router: Router,
     private firebaseSvc: FirebaseService,
-    private sqliteService: SqliteService,
-    private userService: UserService
+    private userService: UserService,
+    private sqliteService: SqliteService, // Inyecta SqliteService
+    private router: Router
   ) {
-    this.initApp();
+    this.initializeApp();
   }
 
-  async initApp() {
-    await this.sqliteService.initializePlugin();
+  async initializeApp() {
     SplashScreen.hide();
+    // Inicializa el plugin SQLite antes de cualquier otra operación
+    await this.sqliteService.initializePlugin();
+    this.checkAuthentication();
   }
 
-  async checkSession() {
-    const session = await this.storageService.getSession();
-    setTimeout(async () => {
-      if (session && session.userId) {
-        const currentUser = await this.firebaseSvc.getUserId();
-        if (currentUser === session.userId) {
-          this.router.navigate(['/tabs/dashboard']);
-        } else {
-          this.router.navigate(['/login']);
-        }
+  checkAuthentication() {
+    this.firebaseSvc.getAuthState().subscribe(async user => {
+      if (user) {
+        console.log('Usuario autenticado:', user.uid);
+        await this.userService.loadUser(); // Cargar usuario desde SQLite
+        this.router.navigate(['/tabs/dashboard'], { replaceUrl: true });
       } else {
-        this.router.navigate(['/login']);
+        console.log('No hay usuario autenticado');
+        this.router.navigate(['/login'], { replaceUrl: true });
       }
-    }, 100);
+    });
   }
 
   async onLogout() {
-    const session = await this.storageService.getSession();
-    if (session && session.userId) {
-      await this.userService.logout();
-    }
-    await this.storageService.clearSession(); // Eliminar la sesión activa
-    this.router.navigate(['/']);
+    await this.firebaseSvc.signOut();
+    await this.userService.logout();
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
-
-  ngOnInit() {}
 }

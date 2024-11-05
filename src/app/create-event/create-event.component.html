@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Crear Nuevo Evento</ion-title>
+    <ion-title>{{ isEditing ? 'Editar Evento' : 'Crear Nuevo Evento' }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="closeModal()">Cerrar</ion-button>
     </ion-buttons>
@@ -151,7 +151,7 @@
 
     <!-- Botón para crear el evento -->
     <ion-button expand="block" type="submit" color="primary">
-      Crear Evento
+      {{ isEditing ? 'Guardar Cambios' : 'Crear Evento' }}
     </ion-button>
   </form>
 </ion-content>

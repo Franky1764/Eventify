@@ -34,9 +34,9 @@ export class NewsPage {
     try {
       const eventsCollection = this.firebaseService.getEvents();
       const querySnapshot = await getDocs(eventsCollection);
-
+  
       this.events = querySnapshot.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() as object };
+        return { uid: doc.id, ...doc.data() as object };
       });
     } catch (error) {
       console.error('Error cargando eventos:', error);
@@ -54,9 +54,16 @@ export class NewsPage {
   async openEventDetail(event) {
     const modal = await this.modalController.create({
       component: EventDetailComponent,
-      componentProps: { event: event }, // Pasar el evento seleccionado al modal
+      componentProps: { event: event }
     });
-    return await modal.present();
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data?.updated || data?.deleted) {
+      // Recargar la lista de eventos si se actualizó o eliminó alguno
+      await this.loadEvents();
+    }
   }
 }
-

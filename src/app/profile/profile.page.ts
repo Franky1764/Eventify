@@ -26,8 +26,11 @@ export class ProfilePage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.userService.loadUser();
     this.user = this.userService.user;
+    if (!this.user) {
+      await this.userService.loadUser();
+      this.user = this.userService.user;
+    }
   }
 
   async takePhoto() {

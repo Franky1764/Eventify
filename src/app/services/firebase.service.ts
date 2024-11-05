@@ -26,9 +26,11 @@ export class FirebaseService {
   private injector: Injector;
   private _sqliteService: SqliteService;
 
-  constructor(injector: Injector) {
+  constructor(injector: Injector, private afAuth: AngularFireAuth) {
     this.injector = injector;
     this.router = injector.get(Router);
+    // Establecer persistencia en 'local' para mantener la sesión
+    this.afAuth.setPersistence('local');
   }
 
   private get sqliteService(): SqliteService {
@@ -76,6 +78,11 @@ export class FirebaseService {
     return session ? session.userId : null;
   }
 
+  async getCurrentUserId(): Promise<string | null> {
+    const user = await this.afAuth.currentUser;
+    return user ? user.uid : null;
+  }
+
   deleteUser() {
     return getAuth().currentUser.delete();
   }
@@ -95,6 +102,15 @@ export class FirebaseService {
       user = { ...existingUser, ...user };
     }
     return this.firestore.collection('users').doc(user.uid).update(user);
+  }
+
+  async signOut(): Promise<void> {
+    try {
+      await this.afAuth.signOut();
+      console.log('Usuario ha cerrado sesión correctamente');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
   }
 
   //REGISTRAR DOCUMENTO EN FIRESTORE
@@ -138,15 +154,27 @@ export class FirebaseService {
     const firestore = getFirestore();
     return collection(firestore, 'events');
   }
+  
   createEvent(event: Event) {
-    return addDoc(collection(getFirestore(), 'events'), event);
+    const { uid, ...eventData } = event;
+    return addDoc(collection(getFirestore(), 'events'), eventData);
   }
+
+  async updateEvent(eventId: string, data: Partial<Event>): Promise<boolean> {
+    const eventRef = doc(getFirestore(), 'events', eventId);
+    try {
+      await updateDoc(eventRef, data);
+      return true;
+    } catch (error) {
+      console.error('Error updating event:', error);
+      throw error;
+    }
+  }
+
   getEventById(eventId: string) {
-    return doc(getFirestore(), 'events', eventId);
+    return getDoc(doc(getFirestore(), 'events', eventId));
   }
-  updateEvent(eventId: string, data: any) {
-    return updateDoc(doc(getFirestore(), 'events', eventId), data);
-  }
+
   deleteEvent(eventId: string) {
     return deleteDoc(doc(getFirestore(), 'events', eventId));
   }
@@ -157,6 +185,11 @@ export class FirebaseService {
     const data = snapshot.docs.map(doc => doc.data());
     console.log(JSON.stringify(data));
     return JSON.stringify(data);
+  }
+
+  // Método para obtener el estado de autenticación
+  getAuthState() {
+    return this.afAuth.authState;
   }
 
 }

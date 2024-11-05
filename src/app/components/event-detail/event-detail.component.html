@@ -7,8 +7,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-card *ngIf="event">
+<ion-content *ngIf="event">
+  <ion-card>
     <ion-card-header>
       <ion-card-title>{{ event.tituloEvento }}</ion-card-title>
     </ion-card-header>
@@ -20,7 +20,6 @@
       <p><strong>Ubicación:</strong> {{ event.dependencia }}</p> <!-- Corregido: "dependecia" a "dependencia" -->
     </ion-card-content>
   </ion-card>
-</ion-content>
 
 
   <ion-grid>
@@ -47,5 +46,4 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
-
+</ion-content>

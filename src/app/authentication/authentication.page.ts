@@ -5,6 +5,7 @@ import { FirebaseService } from '../services/firebase.service'; // Importamos Fi
 import { UtilsService } from '../services/utils.service';
 import { User } from '../models/user.model';
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-authentication',
@@ -17,8 +18,9 @@ export class AuthenticationPage {
   constructor(
     private router: Router,
     private alertController: AlertController,
-    private firebaseService: FirebaseService, // Inyectamos FirebaseService
-    private utilsSvc: UtilsService
+    private utilsSvc: UtilsService,
+    private userService: UserService,
+    private firebaseService: FirebaseService
   ) {
     this.authForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -34,6 +36,9 @@ export class AuthenticationPage {
       try {
         const { email, password } = this.authForm.value;
         await this.firebaseService.signIn({ email, password } as User);
+
+        // Cargar el usuario en UserService
+      await this.userService.loadUser();
 
         // Redirigir a la página de Dashboard
         this.router.navigate(['/tabs/dashboard'], { replaceUrl: true });

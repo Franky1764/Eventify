@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { FirebaseService } from '../../services/firebase.service';
 import { CreateEventComponent } from 'src/app/create-event/create-event.component';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   selector: 'app-event-detail',
@@ -10,53 +11,91 @@ import { CreateEventComponent } from 'src/app/create-event/create-event.componen
 })
 export class EventDetailComponent {
   @Input() event: any;
+  eventUpdated = false;
+  eventDeleted = false; // Nueva bandera para indicar si el evento fue eliminado
 
   constructor(
     private modalController: ModalController,
-    private toastController: ToastController,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private utilsService: UtilsService
   ) {}
 
-  // Método para cerrar el modal
+  // Método para cerrar el modal y pasar las banderas de actualización/eliminación
   dismissModal() {
-    this.modalController.dismiss();
+    this.modalController.dismiss({ updated: this.eventUpdated, deleted: this.eventDeleted });
   }
 
   // Método para registrarse en el evento (a implementar)
   registrarse() {
-    this.showToast('Funcionalidad de registro pendiente.');
+    this.utilsService.presentToast({
+      message: 'Funcionalidad de registro pendiente.',
+      duration: 2000,
+      color: 'warning'
+    });
     // Aquí se implementará la lógica para registrarse al evento
   }
 
   // Método para editar el evento
   async editarEvento() {
     const modal = await this.modalController.create({
-      component: CreateEventComponent,  // Reutilizamos el mismo componente de create event
-      componentProps: { event: this.event }  // Pasamos el evento al modal
+      component: CreateEventComponent,
+      componentProps: {
+        event: this.event, // Pasamos el evento completo
+        isEditing: true
+      }
     });
-    return await modal.present();
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data?.isEdit) {
+      this.event = { ...data.event };
+      this.eventUpdated = true; // Marcamos que el evento fue actualizado
+
+      this.utilsService.presentToast({
+        message: 'Evento actualizado correctamente',
+        duration: 2000,
+        color: 'primary'
+      });
+
+      // No cerramos el modal aquí; permitimos que el usuario lo haga cuando desee
+    }
   }
   
 
-  // Método para eliminar el evento
+  // Método para eliminar el evento con confirmación
   async eliminarEvento() {
-    try {
-      await this.firebaseService.deleteEvent(this.event.uid);
-      this.showToast('Evento eliminado correctamente.');
-      this.dismissModal();
-    } catch (error) {
-      this.showToast('Error al eliminar el evento.');
-      console.error(error);
-    }
-  }
+    await this.utilsService.presentConfirmAlert({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que deseas eliminar este evento? Esta acción es irreversible.',
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+      confirmHandler: async () => {
+        const loading = await this.utilsService.loading();
+        await loading.present();
 
-  // Método para mostrar un toast
-  async showToast(message: string) {
-    const toast = await this.toastController.create({
-      message: message,
-      duration: 2000, // El toast se cerrará automáticamente después de 2 segundos
-      position: 'bottom',
+        try {
+          await this.firebaseService.deleteEvent(this.event.uid);
+          await loading.dismiss();
+          this.utilsService.presentToast({
+            message: 'Evento eliminado correctamente.',
+            duration: 2000,
+            color: 'success'
+          });
+
+          this.eventDeleted = true;
+          this.dismissModal();
+        } catch (error) {
+          await loading.dismiss();
+          this.utilsService.presentToast({
+            message: 'Error al eliminar el evento.',
+            duration: 2000,
+            color: 'danger'
+          });
+          console.error(error);
+        }
+      }
     });
-    await toast.present();
   }
 }
