@@ -4,16 +4,23 @@
   </ion-toolbar>
 </ion-header>
 
+<!-- news.page.html -->
 <ion-content>
-  <ion-list *ngIf="events.length > 0; else noEvents">
-    <ion-item *ngFor="let event of events" (click)="openEventDetail(event)">
-      <ion-label>
-        <h2>{{ event.tituloEvento }}</h2>
-        <p>{{ event.fechaActividad | date }}</p>
-        <p>{{ event.sede }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <ng-container *ngIf="!isLoading; else loading">
+    <ion-list *ngIf="events.length > 0; else noEvents">
+      <ion-item *ngFor="let event of events" (click)="openEventDetail(event)">
+        <ion-label>
+          <h2>{{ event.tituloEvento }}</h2>
+          <p>{{ event.fechaActividad | date }}</p>
+          <p>{{ event.sede }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <ng-template #loading>
+    <!-- El loading se maneja desde el servicio -->
+  </ng-template>
 
   <ng-template #noEvents>
     <ion-text class="ion-text-center">

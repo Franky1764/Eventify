@@ -3,6 +3,8 @@ import { ModalController } from '@ionic/angular';
 import { EventDetailComponent } from '../components/event-detail/event-detail.component';
 import { FirebaseService} from '../services/firebase.service';
 import { getDocs, collection} from '@angular/fire/firestore';
+import { UtilsService } from '../services/utils.service';
+
 
 
 
@@ -13,24 +15,42 @@ import { getDocs, collection} from '@angular/fire/firestore';
 })
 export class NewsPage {
   events = []; // Aquí estarán los eventos traídos desde Firebase
+  isLoading = true; // Para mostrar un spinner mientras se cargan los eventos
 
   constructor(
     private modalController: ModalController,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private utilsService: UtilsService
   ) {}
 
   async ngOnInit() {
-    // Obtener eventos desde Firebase
-    this.loadEvents();
+    await this.loadEvents();
   }
-  async loadEvents() {
-    const eventsCollection = this.firebaseService.getEvents();
-    const querySnapshot = await getDocs(eventsCollection);
 
-    this.events = querySnapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() as object }; // Convierte doc.data() en un objeto
-    }); 
+  async loadEvents() {
+    const loading = await this.utilsService.loading();
+    await loading.present();
+    
+    try {
+      const eventsCollection = this.firebaseService.getEvents();
+      const querySnapshot = await getDocs(eventsCollection);
+
+      this.events = querySnapshot.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() as object };
+      });
+    } catch (error) {
+      console.error('Error cargando eventos:', error);
+      this.utilsService.presentToast({
+        message: 'Error al cargar eventos',
+        color: 'danger',
+        duration: 2500
+      });
+    } finally {
+      this.isLoading = false;
+      await loading.dismiss();
+    }
   }
+  
   async openEventDetail(event) {
     const modal = await this.modalController.create({
       component: EventDetailComponent,
