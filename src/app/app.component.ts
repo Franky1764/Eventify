@@ -4,6 +4,8 @@ import { FirebaseService } from './services/firebase.service';
 import { UserService } from './services/user.service';
 import { SqliteService } from './services/sqlite.service'; // Importa SqliteService
 import { SplashScreen } from '@capacitor/splash-screen';
+import { ToastController } from '@ionic/angular';
+import { StorageService } from './services/storage.service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +17,9 @@ export class AppComponent {
     private firebaseSvc: FirebaseService,
     private userService: UserService,
     private sqliteService: SqliteService, // Inyecta SqliteService
-    private router: Router
+    private router: Router,
+    private toastController: ToastController,
+    private storageService: StorageService
   ) {
     this.initializeApp();
   }
@@ -43,6 +47,17 @@ export class AppComponent {
   async onLogout() {
     await this.firebaseSvc.signOut();
     await this.userService.logout();
+    await this.storageService.clearSession(); // Eliminar la sesión activa
     this.router.navigate(['/login'], { replaceUrl: true });
-  }
+
+  // Mostrar notificación al usuario
+  const toast = await this.toastController.create({
+    message: 'Sesión cerrada exitosamente.',
+    duration: 2000,
+    position: 'bottom',
+    color: 'success' 
+  });
+  await toast.present();
+
+}
 }
