@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" class="ion-text-center">
+        <ion-avatar>
+          <img *ngIf="user && user.profilePhoto; else defaultImage" [src]="user.profilePhoto" alt="Foto de perfil">
+          <ng-template #defaultImage>
+            <img src="assets/img/profile.png" alt="Foto de perfil por defecto">
+          </ng-template>
+        </ion-avatar>
+        <ion-button fill="clear" color="secondary" class="camera-button" (click)="takePhoto()">
+          <ion-icon name="camera-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card *ngIf="user">
+    <ion-card-header>
+      <ion-card-title>{{ user.nombre }} {{ user.apellido }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Edad: {{ user.edad }}</p>
+      <p>Whatsapp: +56 {{ user.whatsapp }}</p>
+      <p>Carrera: {{ user.carrera }}</p>
+      <p>Sede: {{ user.sede }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button shape="round" (click)="openEditModal()" class="custom-button">Editar Perfil</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" (click)="logout()" color="medium" class="custom-button">Cerrar Sesión</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Sección para la imagen de bienvenida -->
+  <div class="welcome-section">
+    <img src="assets/img/bienvenida.png" alt="Gatita saludando" class="welcome-image" />
+    <h3>Me alegra verte por aquí</h3>
+  </div>
+</ion-content>

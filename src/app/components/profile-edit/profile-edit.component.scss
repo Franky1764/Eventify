@@ -1,0 +1,45 @@
+ion-item.custom-item {
+    --inner-padding-start: 10px;
+    --inner-padding-end: 10px;
+    margin-bottom: 15px; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  }
+  
+  ion-button.custom-button {
+    --background: linear-gradient(45deg, #B583FF, #D4A5FF, #FF77FF);
+    --color: white;
+    --border-radius: 20px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    width: 150px;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  ion-button.custom-button:hover {
+    --background: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  ion-grid {
+    margin-top: 20px; 
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; 
+}
+
+p {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300; 
+}

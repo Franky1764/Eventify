@@ -1,0 +1,47 @@
+.not-found-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+  
+    h2 {
+      font-size: 2rem;
+      color: darkorchid;
+      margin-bottom: 10px;
+    }
+  
+    p {
+      color: #8e8e93;
+      margin-bottom: 20px;
+    }
+  }
+  body {
+    font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; 
+}
+
+p {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300; 
+}
+.not-found-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px; 
+  border-radius: 12px; 
+  transition: transform 0.3s ease; 
+}
+
+.not-found-image:hover {
+  transform: scale(1.05); 
+}

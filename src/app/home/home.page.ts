@@ -12,6 +12,6 @@ export class HomePage {
 
   // Este es el método que faltaba para la navegación
   goToAuthentication() {
-    this.navCtrl.navigateForward('/authentication');
+    this.navCtrl.navigateForward('/login');
   }
 }

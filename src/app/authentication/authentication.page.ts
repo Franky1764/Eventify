@@ -1,15 +1,73 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AlertController } from '@ionic/angular';
+import { FirebaseService } from '../services/firebase.service'; // Importamos FirebaseService
+import { UtilsService } from '../services/utils.service';
+import { User } from '../models/user.model';
+import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-authentication',
   templateUrl: './authentication.page.html',
   styleUrls: ['./authentication.page.scss'],
 })
-export class AuthenticationPage implements OnInit {
+export class AuthenticationPage {
+  authForm: FormGroup;
 
-  constructor() { }
-
-  ngOnInit() {
+  constructor(
+    private router: Router,
+    private alertController: AlertController,
+    private utilsSvc: UtilsService,
+    private userService: UserService,
+    private firebaseService: FirebaseService
+  ) {
+    this.authForm = new FormGroup({
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required, Validators.minLength(4)])
+    });
   }
 
+  async onSubmit() {
+    if (this.authForm.valid) {
+      const loading = await this.utilsSvc.loading();
+      await loading.present();
+
+      try {
+        const { email, password } = this.authForm.value;
+        await this.firebaseService.signIn({ email, password } as User);
+
+        // Cargar el usuario en UserService
+      await this.userService.loadUser();
+
+        // Redirigir a la página de Dashboard
+        this.router.navigate(['/tabs/dashboard'], { replaceUrl: true });
+        
+      } catch (error) {
+        if (error.code === 'auth/user-not-found') {
+          this.showAlert('Usuario no existe');
+        } else if (error.code === 'auth/invalid-credential') {
+          this.showAlert('Clave incorrecta');
+        } else {
+          this.showAlert('Error de autenticación');
+          this.utilsSvc.presentToast({
+            message: error.message,
+            duration: 3000,
+            color: 'primary'
+          });
+        }
+      } finally {
+        loading.dismiss();
+      }
+    }
+  }
+
+  async showAlert(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Ups!',
+      message,
+      buttons: ['Reintentar']
+    });
+    await alert.present();
+  }
 }

@@ -1,0 +1,34 @@
+<ion-tabs>
+  <ion-tab-bar slot="bottom" class="bottom-tab-bar">
+    <ion-tab-button tab="dashboard">
+      <ion-icon name="home"></ion-icon>
+      Home
+    </ion-tab-button>
+
+  <ion-tab-button tab="news"> 
+    <ion-icon name="newspaper-outline"></ion-icon>
+    Noticias
+  </ion-tab-button>
+
+    <ion-tab-button tab="add">
+      <ion-icon name="add-outline"></ion-icon> <!-- no tocar, no es funcional por ahora-->
+    </ion-tab-button>
+
+    <ion-tab-button tab="camera">
+      <ion-icon name="camera-outline"></ion-icon>
+      Galeria
+    </ion-tab-button>
+    
+    <ion-tab-button tab="profile">
+      <ion-icon name="person-outline"></ion-icon>
+      Perfil
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>
+
+<!-- Botón flotante -->
+<ion-fab slot="fixed" vertical="bottom" horizontal="center">
+  <ion-fab-button size="large" color="tertiary" class="fab-button" (click)="openCreateEventModal()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>    

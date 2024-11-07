@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title></ion-title> <!-- Sin título en el encabezado -->
+    <ion-title></ion-title> 
   </ion-toolbar>
 </ion-header>
 
@@ -14,34 +14,36 @@
     <p>Descubre los Eventos de Más Mujeres en las TIC’s</p>
   </div>
 
-  <div class="auth-form">
-    <ion-item>
-      <ion-icon name="globe-outline" slot="start"></ion-icon>
-      <ion-input placeholder="Email" type="email"></ion-input>
-    </ion-item>
+  <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+    <div class="auth-form">
+      <ion-item>
+        <ion-icon name="globe-outline" slot="start"></ion-icon>
+        <ion-input formControlName="email" placeholder="Email" type="email"></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-      <ion-input placeholder="Password" type="password"></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input formControlName="password" placeholder="Password" type="password"></ion-input>
+      </ion-item>
 
-    <a class="forgot-password" href="#">¿Olvidaste tu contraseña?</a>
+      <a class="forgot-password" href="#">¿Olvidaste tu contraseña?</a>
 
-    <ion-button expand="block" color="primary" class="login-button">Ingresa</ion-button>
+      <ion-button expand="block" color="primary" class="login-button" type="submit" [disabled]="!authForm.valid">Ingresa</ion-button>
 
-    <div class="or-divider">
-      <hr/>
-      <span>OR JOIN</span>
-      <hr/>
+      <div class="or-divider">
+        <hr/>
+        <span>OR JOIN</span>
+        <hr/>
+      </div>
+
+      <div class="social-buttons">
+        <ion-button expand="block" fill="outline" class="social-button">Facebook</ion-button>
+        <ion-button expand="block" fill="outline" class="social-button">Google</ion-button>
+      </div>
+
+      <div class="signup-link">
+        <p>Nuevo en EasyMMT <a [routerLink]="['/register']">Sign Up</a></p>
+      </div>
     </div>
-
-    <div class="social-buttons">
-      <ion-button expand="block" fill="outline" class="social-button">Facebook</ion-button>
-      <ion-button expand="block" fill="outline" class="social-button">Google</ion-button>
-    </div>
-
-    <div class="signup-link">
-      <p>Nuevo en EasyMMIT <a href="/register">Sign Up</a></p>
-    </div>
-  </div>
+  </form>
 </ion-content>

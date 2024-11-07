@@ -1,35 +1,61 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Mantente al día con los últimos Eventos</ion-title>
-    <ion-buttons slot="end">
+  <ion-toolbar class="top">
+    <ion-title>Easy MMeeT</ion-title>
+    <ion-buttons slot="end" [routerLink]="['../profile']">
       <ion-avatar>
-        <img src="assets/img/profile.png" />
+        <img *ngIf="user && user.profilePhoto; else defaultImage" [src]="user.profilePhoto" alt="Foto de perfil">
+        <ng-template #defaultImage>
+          <img src="assets/img/profile.png" alt="Foto de perfil por defecto">
+        </ng-template>
       </ion-avatar>
     </ion-buttons>
   </ion-toolbar>
+  <ion-searchbar placeholder="Buscar" showCancelButton="focus"></ion-searchbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <!-- Buscador -->
-  <ion-searchbar placeholder="Buscar" showCancelButton="focus"></ion-searchbar>
-
-  <!-- Sección: Descubre nuevos eventos -->
+<!-- Sección: Categorías -->
+<ion-content [fullscreen]="true"> 
   <ion-text>
-    <h2>Descubre nuevos eventos</h2>
+    <h6 *ngIf="user && user.nombre; else noProfile">¡Hola {{ user.nombre }}!, revisa los nuevos eventos de nuestra comunidad.</h6>
+    <ng-template #noProfile>
+      <h6>Hola!, por favor registra y/o modificar tus datos en el perfil de usuario</h6>
+    </ng-template>
+  </ion-text>
+
+  <hr class="section-divider">
+
+  <ion-text>
+    <h3>Categorías</h3>
+  </ion-text>
+  <ion-grid>
+    <ion-row class="category-row">
+      <ion-col size="auto" *ngFor="let category of categories" (click)="openCategoryDetails(category.name)">
+        <ion-button class="category-button">
+          <ion-icon slot="icon-only" [name]="category.icon"></ion-icon>
+        </ion-button>
+        <p>{{ category.name }}</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <hr class="section-divider">
+
+  <ion-text class="section-title">
+    <h3>Descubre nuevos eventos</h3>
   </ion-text>
   <ion-grid>
     <ion-row>
       <ion-col size="6">
-        <ion-card>
-          <ion-img src="assets/img/mentorias.jpg"></ion-img>
+        <ion-card class="event-card">
+          <ion-img src="assets/img/Mentorias2.png"></ion-img>
           <ion-card-content>
             Mentorías
           </ion-card-content>
         </ion-card>
       </ion-col>
       <ion-col size="6">
-        <ion-card>
-          <ion-img src="assets/img/Charlas.jpg"></ion-img>
+        <ion-card class="event-card">
+          <ion-img src="assets/img/Charlas2.png"></ion-img>
           <ion-card-content>
             Charlas
           </ion-card-content>
@@ -37,88 +63,30 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+  
+  <hr class="section-divider">
 
-  <!-- Sección: Categorías -->
-<!-- Sección: Categorías -->
-<ion-text>
-  <h2>Categorías</h2>
-</ion-text>
-<ion-grid>
-  <ion-row class="category-row">
-    <ion-col size="auto">
-      <ion-button fill="solid" shape="round" class="category-button">
-        <ion-icon name="briefcase-outline"></ion-icon>
-      </ion-button>
-      <p>Talleres</p>
-    </ion-col>
-    <ion-col size="auto">
-      <ion-button fill="solid" shape="round" class="category-button">
-        <ion-icon name="star-outline"></ion-icon>
-      </ion-button>
-      <p>Desafíos</p>
-    </ion-col>
-    <ion-col size="auto">
-      <ion-button fill="solid" shape="round" class="category-button">
-        <ion-icon name="book-outline"></ion-icon>
-      </ion-button>
-      <p>Mentorías</p>
-    </ion-col>
-    <ion-col size="auto">
-      <ion-button fill="solid" shape="round" class="category-button">
-        <ion-icon name="camera-outline"></ion-icon>
-      </ion-button>
-      <p>Charlas</p>
-    </ion-col>
-    <ion-col size="auto">
-      <ion-button fill="solid" shape="round" class="category-button">
-        <ion-icon name="train-outline"></ion-icon>
-      </ion-button>
-      <p>Stands</p>
-    </ion-col>
-  </ion-row>
-</ion-grid>
-
-  <!-- Sección: Eventos Recomendados -->
-  <ion-text>
-    <h2>Eventos Recomendados</h2>
+  <ion-text class="section-title">
+    <h3>Eventos Recomendados</h3>
   </ion-text>
   <ion-grid>
     <ion-row>
       <ion-col size="6">
-        <ion-card>
-          <ion-img src="assets/img/Talleres.jpg"></ion-img>
+        <ion-card class="event-card">
+          <ion-img src="assets/img/Talleres.png"></ion-img>
           <ion-card-content>
-            Consolida tus conocimientos
+            Talleres
           </ion-card-content>
         </ion-card>
       </ion-col>
       <ion-col size="6">
-        <ion-card>
-          <ion-img src="assets/img/Desafios.jpg"></ion-img>
+        <ion-card class="event-card">
+          <ion-img src="assets/img/Desafios.png"></ion-img>
           <ion-card-content>
-            Atrévete
+            Desafíos MMT
           </ion-card-content>
         </ion-card>
       </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>
-
-<!-- Barra de navegación inferior -->
-<ion-footer>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button>
-        <ion-icon name="home-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-button>
-      <ion-button>
-        <ion-icon name="person-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-footer>

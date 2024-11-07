@@ -1,0 +1,157 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ isEditing ? 'Editar Evento' : 'Crear Nuevo Evento' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="eventForm"  (ngSubmit)="onSubmit()">
+    <!-- Sede -->
+    <ion-item>
+      <ion-label position="floating">Sede</ion-label>
+      <ion-select formControlName="sede" required>
+        <ion-select-option value="Alameda">Alameda</ion-select-option>
+        <ion-select-option value="Alonso de Ovalle">Alonso de Ovalle</ion-select-option>
+        <ion-select-option value="Antonio Varas">Antonio Varas</ion-select-option>
+        <ion-select-option value="Campus Arauco">Campus Arauco</ion-select-option>
+        <ion-select-option value="Campus Nacimiento">Campus Nacimiento</ion-select-option>
+        <ion-select-option value="Campus Villarrica">Campus Villarrica</ion-select-option>
+        <ion-select-option value="Maipu">Maipú</ion-select-option>
+        <ion-select-option value="Melipilla">Melipilla</ion-select-option>
+        <ion-select-option value="Plaza Norte">Plaza Norte</ion-select-option>
+        <ion-select-option value="Plaza Oeste">Plaza Oeste</ion-select-option>
+        <ion-select-option value="Plaza Vespucio">Plaza Vespucio</ion-select-option>
+        <ion-select-option value="Puente Alto">Puente Alto</ion-select-option>
+        <ion-select-option value="Puerto Montt">Puerto Montt</ion-select-option>
+        <ion-select-option value="San Andres de Concepcion">San Andrés de Concepción</ion-select-option>
+        <ion-select-option value="San Bernardo">San Bernardo</ion-select-option>
+        <ion-select-option value="San Carlos de Apoquindo">San Carlos de Apoquindo</ion-select-option>
+        <ion-select-option value="San Joaquin">San Joaquín</ion-select-option>
+        <ion-select-option value="Valparaiso">Valparaiso</ion-select-option>
+        <ion-select-option value="Vina del Mar">Viña del Mar</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Tipo de Actividad -->
+    <ion-item>
+      <ion-label position="floating">Tipo de Actividad</ion-label>
+      <ion-select formControlName="tipoActividad" required>
+        <ion-select-option value="Desafios">Desafíos</ion-select-option>        
+        <ion-select-option value="Encuentro">Encuentro</ion-select-option>
+        <ion-select-option value="Charlas">Charlas</ion-select-option>
+        <ion-select-option value="Mentorias">Mentorías</ion-select-option>        
+        <ion-select-option value="Stands">Stands</ion-select-option>
+        <ion-select-option value="Talleres">Talleres</ion-select-option>
+        <ion-select-option value="Visita">Visita a Colegio</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Título del Evento -->
+    <ion-item>
+      <ion-label position="floating">Título del Evento</ion-label>
+      <ion-input type="text" formControlName="tituloEvento" required></ion-input>
+    </ion-item>
+
+    <!-- Fecha del Evento -->
+    <ion-item>
+      <ion-label position="floating">Fecha del Evento</ion-label>
+      <ion-datetime [firstDayOfWeek]="1" formControlName="fechaActividad" display-format="DD/MM/YYYY"></ion-datetime>
+    </ion-item>
+
+    <!-- Dependencia -->
+    <ion-item>
+      <ion-label position="floating">Dependencia</ion-label>
+      <ion-input type="text" formControlName="dependencia" required></ion-input>
+    </ion-item>
+
+    <!-- Horario Inicio -->
+    <ion-item>
+      <ion-label position="floating">Horario Inicio</ion-label>
+      <ion-datetime [firstDayOfWeek]="1" display-format="HH:mm" display-format="HH:mm" formControlName="horarioInicio" required></ion-datetime>
+    </ion-item>
+
+    <!-- Horario Término -->
+    <ion-item>
+      <ion-label position="floating">Horario Término</ion-label>
+      <ion-datetime [firstDayOfWeek]="1" display-format="HH:mm" picker-format="HH:mm" formControlName="horarioTermino" required></ion-datetime>
+    </ion-item>
+
+    <!-- Modalidad -->
+    <ion-item>
+      <ion-label position="floating">Modalidad</ion-label>
+      <ion-select formControlName="modalidad">
+        <ion-select-option value="presencial">Presencial</ion-select-option>
+        <ion-select-option value="online">Online</ion-select-option>
+        <ion-select-option value="hibrida">Híbrida</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Docente Representante -->
+    <ion-item>
+      <ion-label position="floating">Docente Representante</ion-label>
+      <ion-input type="text" formControlName="docenteRepresentante"></ion-input>
+    </ion-item>
+
+    <!-- Invitados y/o Docentes de apoyo -->
+    <ion-item>
+      <ion-label position="floating">Invitados y/o Docentes de Apoyo</ion-label>
+      <ion-textarea formControlName="invitados"></ion-textarea>
+    </ion-item>
+
+    <!-- Director Participante -->
+    <ion-item>
+      <ion-label position="floating">Director Participante</ion-label>
+      <ion-input type="text" formControlName="directorParticipante"></ion-input>
+    </ion-item>
+
+    <!-- Lider Participante -->
+    <ion-item>
+      <ion-label position="floating">Lider Participante</ion-label>
+      <ion-input type="text" formControlName="liderParticipante"></ion-input>
+    </ion-item>
+
+    <!-- Sublider Participante -->
+    <ion-item>
+      <ion-label position="floating">Sublider Participante</ion-label>
+      <ion-input type="text" formControlName="subliderParticipante"></ion-input>
+    </ion-item>
+
+    <!-- Embajadores/Voluntarios Participantes -->
+    <ion-item>
+      <ion-label position="floating">Embajadores/Voluntarios Participantes</ion-label>
+      <ion-textarea formControlName="embajadores"></ion-textarea>
+    </ion-item>
+
+    <!-- Inscritos (registro) -->
+    <ion-item>
+      <ion-label position="floating">Inscritos (Registro)</ion-label>
+      <ion-input type="number" formControlName="inscritos"></ion-input>
+    </ion-item>
+
+    <!-- Asistentes Presencial -->
+    <ion-item>
+      <ion-label position="floating">Asistentes Presencial</ion-label>
+      <ion-input type="number" formControlName="asistentesPresencial"></ion-input>
+    </ion-item>
+
+    <!-- Asistentes Online -->
+    <ion-item>
+      <ion-label position="floating">Asistentes Online</ion-label>
+      <ion-input type="number" formControlName="asistentesOnline"></ion-input>
+    </ion-item>
+
+    <!-- Enlace/s a publicación -->
+    <ion-item>
+      <ion-label position="floating">Enlace/s a Publicación y/o Archivo de Imágenes/Reportes</ion-label>
+      <ion-textarea formControlName="enlaces"></ion-textarea>
+    </ion-item>
+
+    <!-- Botón para crear el evento -->
+    <ion-button expand="block" type="submit" color="primary">
+      {{ isEditing ? 'Guardar Cambios' : 'Crear Evento' }}
+    </ion-button>
+  </form>
+</ion-content>

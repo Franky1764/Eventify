@@ -1,3 +1,25 @@
 {
-  "typescript.preferences.autoImportFileExcludePatterns": ["@ionic/angular/common", "@ionic/angular/standalone"]
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "@ionic/angular/common",
+    "@ionic/angular/standalone"
+  ],
+  "cSpell.words": [
+    "Alonso",
+    "Andrés",
+    "Apoquindo",
+    "Arauco",
+    "Joaquín",
+    "Maipú",
+    "Melipilla",
+    "Montt",
+    "Nacimiento",
+    "Norte",
+    "Oeste",
+    "Ovalle",
+    "Puente",
+    "sede",
+    "Vespucio",
+    "Villarrica",
+    "Viña"
+  ]
 }

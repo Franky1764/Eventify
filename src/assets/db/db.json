@@ -1,0 +1,62 @@
+{
+  "database": "eventify.db",
+  "version": 1,
+  "encrypted": false,
+  "mode": "full",
+  "tables": [
+    {
+      "name": "users",
+      "schema": [
+        { "column": "uid", "value": "TEXT PRIMARY KEY NOT NULL" },
+        { "column": "username", "value": "TEXT NOT NULL" },
+        { "column": "email", "value": "TEXT UNIQUE NOT NULL" },
+        { "column": "password", "value": "TEXT NOT NULL" },
+        { "column": "nivel", "value": "INTEGER NOT NULL" },
+        { "column": "nombre", "value": "TEXT NOT NULL" },
+        { "column": "apellido", "value": "TEXT NOT NULL" },
+        { "column": "edad", "value": "TEXT NOT NULL" },
+        { "column": "whatsapp", "value": "TEXT NOT NULL" },
+        { "column": "carrera", "value": "TEXT NOT NULL" },
+        { "column": "sede", "value": "TEXT NOT NULL" },
+        { "column": "profilePhoto", "value": "TEXT NOT NULL" },
+        { "column": "sql_deleted", "value": "BOOLEAN DEFAULT 0 CHECK (sql_deleted IN (0, 1))" },
+        { "column": "last_modified", "value": "INTEGER DEFAULT (strftime('%s', 'now'))" }
+      ],
+      "indexes": [
+        { "name": "index_user_on_username", "value": "username" },
+        { "name": "index_user_on_email", "value": "email" },
+        { "name": "index_user_on_last_modified", "value": "last_modified DESC" }
+      ]
+    },
+    {
+      "name": "events",
+      "schema": [
+        { "column": "uid", "value": "TEXT PRIMARY KEY NOT NULL" },
+        { "column": "sede", "value": "TEXT NOT NULL" },
+        { "column": "tipoActividad", "value": "TEXT NOT NULL" },
+        { "column": "tituloEvento", "value": "TEXT NOT NULL" },
+        { "column": "fechaActividad", "value": "TEXT NOT NULL" },
+        { "column": "horarioInicio", "value": "TEXT NOT NULL" },
+        { "column": "horarioTermino", "value": "TEXT NOT NULL" },
+        { "column": "dependencia", "value": "TEXT NOT NULL" },
+        { "column": "modalidad", "value": "TEXT NOT NULL" },
+        { "column": "docenteRepresentante", "value": "TEXT NOT NULL" },
+        { "column": "invitados", "value": "TEXT NOT NULL" },
+        { "column": "directorParticipante", "value": "TEXT NOT NULL" },
+        { "column": "liderParticipante", "value": "TEXT NOT NULL" },
+        { "column": "subliderParticipante", "value": "TEXT NOT NULL" },
+        { "column": "embajadores", "value": "TEXT NOT NULL" },
+        { "column": "inscritos", "value": "INTEGER NOT NULL" },
+        { "column": "asistentesPresencial", "value": "INTEGER NOT NULL" },
+        { "column": "asistentesOnline", "value": "INTEGER NOT NULL" },
+        { "column": "enlaces", "value": "TEXT NOT NULL" },
+        { "column": "sql_deleted", "value": "BOOLEAN DEFAULT 0 CHECK (sql_deleted IN (0, 1))" },
+        { "column": "last_modified", "value": "INTEGER DEFAULT (strftime('%s', 'now'))" }
+      ],
+      "indexes": [
+        { "name": "index_events_on_tituloEvento", "value": "tituloEvento" },
+        { "name": "index_events_on_last_modified", "value": "last_modified DESC" }
+      ]
+    }
+  ]
+}

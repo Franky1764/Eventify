@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { TabsComponent } from './tabs/tabs.component';
+import { AuthGuard } from './services/auth.guard'; // Importamos AuthGuard
 
 const routes: Routes = [
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
   },
   {
     path: '',
@@ -12,16 +14,59 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'authentication',
-    loadChildren: () => import('./authentication/authentication.module').then( m => m.AuthenticationPageModule)
+    path: 'login',
+    loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationPageModule)
   },
   {
     path: 'register',
-    loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
-  },  {
-    path: 'dashboard',
-    loadChildren: () => import('./dashboard/dashboard.module').then( m => m.DashboardPageModule)
+    loadChildren: () => import('./register/register.module').then(m => m.RegisterPageModule)
   },
+  {
+    path: 'tabs',
+    component: TabsComponent,
+    canActivate: [AuthGuard], // Protegemos la ruta 'tabs' con AuthGuard
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardPageModule),
+        canActivate: [AuthGuard] // Protegemos la ruta 'dashboard' con AuthGuard
+      },
+      {
+        path: 'profile',
+        loadChildren: () => import('./profile/profile.module').then(m => m.ProfilePageModule),
+        canActivate: [AuthGuard] // Protegemos la ruta 'profile' con AuthGuard
+      },
+      {
+        path: 'news',
+        loadChildren: () => import('./news/news.module').then( m => m.NewsPageModule),
+        canActivate: [AuthGuard]
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
+    path: 'not-found',
+    loadChildren: () => import('./not-found/not-found.module').then(m => m.NotFoundPageModule)
+  },
+  { path: '**', redirectTo: 'not-found' },
+  {
+    path: 'category-details',
+    loadChildren: () => import('./category-details/category-details.module').then( m => m.CategoryDetailsPageModule)
+  },
+  {
+    path: 'category-details/:categoryName',
+    loadChildren: () => import('./category-details/category-details.module').then(m => m.CategoryDetailsPageModule)
+  }
+
 
 ];
 
@@ -31,4 +76,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
