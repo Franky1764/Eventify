@@ -8,42 +8,33 @@
 </ion-header>
 
 <ion-content *ngIf="event">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ event.tituloEvento }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p><strong>Sede:</strong> {{ event.sede }}</p>
-      <p><strong>Fecha:</strong> {{ event.fechaActividad }}</p>
-      <p><strong>Modalidad:</strong> {{ event.modalidad }}</p>
-      <p><strong>Tipo de Actividad:</strong> {{ event.tipoActividad }}</p>
-      <p><strong>Ubicación:</strong> {{ event.dependencia }}</p> <!-- Corregido: "dependecia" a "dependencia" -->
-    </ion-card-content>
-  </ion-card>
-
-
-  <ion-grid>
-    <ion-row>
+  <ion-item-sliding>
+    <ion-item>
+      <ion-label>
+        <h2>{{ event.tituloEvento }}</h2>
+        <p><strong>Sede:</strong> {{ event.sede }}</p>
+        <p><strong>Fecha:</strong> {{ event.fechaActividad }}</p>
+        <p><strong>Modalidad:</strong> {{ event.modalidad }}</p>
+        <p><strong>Tipo de Actividad:</strong> {{ event.tipoActividad }}</p>
+        <p><strong>Ubicación:</strong> {{ event.dependencia }}</p>
+      </ion-label>
+    </ion-item>
+    
+    <ion-item-options side="end">
       <!-- Botón para registrarse -->
-      <ion-col size="4">
-        <ion-button expand="block" color="primary" (click)="registrarse()">
-          Registrarme
-        </ion-button>
-      </ion-col>
-
+      <ion-item-option color="primary" (click)="registrarse()">
+        Registrarme
+      </ion-item-option>
+      
       <!-- Botón para editar el evento -->
-      <ion-col size="4">
-        <ion-button expand="block" color="secondary" (click)="editarEvento()">
-          Editar Evento
-        </ion-button>
-      </ion-col>
-
+      <ion-item-option color="secondary" (click)="editarEvento()">
+        Editar Evento
+      </ion-item-option>
+      
       <!-- Botón para eliminar el evento -->
-      <ion-col size="4">
-        <ion-button expand="block" color="danger" (click)="eliminarEvento()">
-          Eliminar Evento
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      <ion-item-option color="danger" (click)="eliminarEvento()">
+        Eliminar Evento
+      </ion-item-option>
+    </ion-item-options>
+  </ion-item-sliding>
 </ion-content>
