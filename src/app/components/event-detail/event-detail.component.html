@@ -23,17 +23,17 @@
     <ion-item-options side="end">
       <!-- Botón para registrarse -->
       <ion-item-option color="primary" (click)="registrarse()">
-        Registrarme
+        <ion-icon slot="end" name="log-in-outline"></ion-icon>
       </ion-item-option>
       
       <!-- Botón para editar el evento -->
       <ion-item-option color="secondary" (click)="editarEvento()">
-        Editar Evento
+        <ion-icon slot="end" name="create-outline"></ion-icon>
       </ion-item-option>
       
       <!-- Botón para eliminar el evento -->
       <ion-item-option color="danger" (click)="eliminarEvento()">
-        Eliminar Evento
+        <ion-icon slot="end" name="trash-outline"></ion-icon>
       </ion-item-option>
     </ion-item-options>
   </ion-item-sliding>

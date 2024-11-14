@@ -7,6 +7,7 @@ import { AppComponent } from '../app.component';
 import { FirebaseService } from '../services/firebase.service';
 import { User } from '../models/user.model';
 import { SqliteService } from '../services/sqlite.service';
+import { UtilsService } from '../services/utils.service';
 
 @Component({
   selector: 'app-profile',
@@ -22,7 +23,8 @@ export class ProfilePage implements OnInit {
     private firebaseService: FirebaseService,
     private navCtrl: NavController,
     private modalController: ModalController,
-    private appComponent: AppComponent
+    private appComponent: AppComponent,
+    private utilsService: UtilsService
   ) {}
 
   async ngOnInit() {
@@ -42,11 +44,57 @@ export class ProfilePage implements OnInit {
     });
 
     if (image && this.user) {
-      const photoUrl = await this.firebaseService.uploadImage(image.dataUrl, `profilePhotos/${this.user.uid}.jpg`);
-      await this.userService.updateProfilePhoto(this.user.uid, photoUrl);
-      this.user.profilePhoto = photoUrl;
-      await this.sqliteService.updateUser(this.user);
+      const loading = await this.utilsService.loading();
+      await loading.present();
+      try {
+        // Redimensionar la imagen antes de subirla
+        const resizedImage = await this.resizeImage(image.dataUrl, 800, 800);
+
+        const photoUrl = await this.firebaseService.uploadImage(resizedImage, `profilePhotos/${this.user.uid}.jpg`);
+        await this.userService.updateProfilePhoto(this.user.uid, photoUrl);
+        this.user.profilePhoto = photoUrl;
+        await this.sqliteService.updateUser(this.user);
+      } catch (error) {
+        console.error('Error procesando la imagen:', error);
+      } finally {
+        loading.dismiss();
+      }
     }
+  }
+
+  private async resizeImage(dataUrl: string, maxWidth: number, maxHeight: number): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = dataUrl;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        // Mantener proporción
+        if (width > maxWidth || height > maxHeight) {
+          const widthRatio = maxWidth / width;
+          const heightRatio = maxHeight / height;
+          const ratio = Math.min(widthRatio, heightRatio);
+          width = width * ratio;
+          height = height * ratio;
+        }
+
+        // Redimensionar usando canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Convertir a DataURL con calidad ajustada
+        const newDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        resolve(newDataUrl);
+      };
+      img.onerror = (err) => {
+        console.error('Error cargando la imagen:', err);
+        resolve(dataUrl); // Devuelve la imagen original en caso de error
+      };
+    });
   }
 
   goBack() {

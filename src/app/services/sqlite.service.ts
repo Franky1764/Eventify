@@ -61,7 +61,7 @@ export class SqliteService {
     return this.users.asReadonly(); // Devuelve un ReadableSignal
   }
 
-  // CRUD operations
+  // CRUD USERS
   async loadUsers() {
     try {
       const users = await this.db.query(`SELECT * FROM users`);
