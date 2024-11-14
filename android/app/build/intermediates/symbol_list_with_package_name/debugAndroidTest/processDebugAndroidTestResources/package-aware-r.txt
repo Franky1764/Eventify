@@ -1,3 +1,0 @@
-com.ionic.eventify.test
-style WhiteBackgroundDialogTheme
-style WhiteBackgroundTheme

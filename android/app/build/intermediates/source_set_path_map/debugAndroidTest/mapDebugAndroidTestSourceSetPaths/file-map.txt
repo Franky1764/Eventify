@@ -1,6 +1,0 @@
-com.ionic.eventify.test.app-annotation-experimental-1.3.0-0 C:\Users\frank\.gradle\caches\transforms-4\c3f29cc482c5505c30ee93e8490dad4f\transformed\annotation-experimental-1.3.0\res
-com.ionic.eventify.test.app-core-1.5.0-1 C:\Users\frank\.gradle\caches\transforms-4\f9dfead36295d18f8594a557659d6bca\transformed\core-1.5.0\res
-com.ionic.eventify.test.app-androidTest-2 C:\Users\frank\ProjectosIonic\Eventify\android\app\build\generated\res\resValues\androidTest\debug
-com.ionic.eventify.test.app-mergeDebugAndroidTestResources-3 C:\Users\frank\ProjectosIonic\Eventify\android\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
-com.ionic.eventify.test.app-mergeDebugAndroidTestResources-4 C:\Users\frank\ProjectosIonic\Eventify\android\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
-com.ionic.eventify.test.app-debugAndroidTest-5 C:\Users\frank\ProjectosIonic\Eventify\android\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources
