@@ -12,7 +12,7 @@ export class UserService {
 
   constructor(
     private sqliteService: SqliteService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
   ) {}
 
   async loadUser() {
