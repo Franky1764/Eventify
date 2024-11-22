@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Renderer2, ElementRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -9,11 +9,21 @@ import { ModalController } from '@ionic/angular';
 export class ViewPhotoComponent implements OnInit {
   @Input() photoUrl: string;
 
-  constructor(private modalController: ModalController) { }
+  constructor(private modalController: ModalController, private renderer: Renderer2, private el: ElementRef) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Aplicar la animación de entrada
+    this.renderer.addClass(this.el.nativeElement, 'fade-in');
+  }
 
   closeModal() {
-    this.modalController.dismiss();
+    // Aplicar la animación de salida
+    this.renderer.removeClass(this.el.nativeElement, 'fade-in');
+    this.renderer.addClass(this.el.nativeElement, 'fade-out');
+
+    // Esperar a que la animación termine antes de cerrar el modal
+    setTimeout(() => {
+      this.modalController.dismiss();
+    }, 300); // Duración de la animación
   }
 }
