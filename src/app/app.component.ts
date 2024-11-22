@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Platform } from '@ionic/angular';
 import { FirebaseService } from './services/firebase.service';
 import { UserService } from './services/user.service';
-import { SqliteService } from './services/sqlite.service'; // Importa SqliteService
+import { SqliteService } from './services/sqlite.service';
+import { Router } from '@angular/router';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { ToastController } from '@ionic/angular';
 import { StorageService } from './services/storage.service';
@@ -14,9 +15,10 @@ import { StorageService } from './services/storage.service';
 })
 export class AppComponent {
   constructor(
+    private platform: Platform,
     private firebaseSvc: FirebaseService,
     private userService: UserService,
-    private sqliteService: SqliteService, // Inyecta SqliteService
+    private sqliteService: SqliteService,
     private router: Router,
     private toastController: ToastController,
     private storageService: StorageService
@@ -25,10 +27,20 @@ export class AppComponent {
   }
 
   async initializeApp() {
-    SplashScreen.hide();
-    // Inicializa el plugin SQLite antes de cualquier otra operación
-    await this.sqliteService.initializePlugin();
-    this.checkAuthentication();
+    try {
+      await this.platform.ready();
+      SplashScreen.hide();
+      
+      const initialized = await this.sqliteService.initializePlugin();
+      if (!initialized) {
+        console.error('Error al inicializar SQLite');
+        return;
+      }
+
+      this.checkAuthentication();
+    } catch (error) {
+      console.error('Error al inicializar la aplicación:', error);
+    }
   }
 
   checkAuthentication() {
@@ -50,14 +62,13 @@ export class AppComponent {
     await this.storageService.clearSession(); // Eliminar la sesión activa
     this.router.navigate(['/login'], { replaceUrl: true });
 
-  // Mostrar notificación al usuario
-  const toast = await this.toastController.create({
-    message: 'Sesión cerrada exitosamente.',
-    duration: 2000,
-    position: 'bottom',
-    color: 'success' 
-  });
-  await toast.present();
-
-}
+    // Mostrar notificación al usuario
+    const toast = await this.toastController.create({
+      message: 'Sesión cerrada exitosamente.',
+      duration: 2000,
+      position: 'bottom',
+      color: 'success' 
+    });
+    await toast.present();
+  }
 }

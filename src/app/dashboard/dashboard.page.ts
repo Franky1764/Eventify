@@ -4,7 +4,7 @@ import { add } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { User } from '../models/user.model';
-import { Platform } from '@ionic/angular';
+import { Platform, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,7 +25,8 @@ export class DashboardPage implements OnInit {
   constructor(
     private platform: Platform,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private loadingController: LoadingController
   ) {
     this.platform.backButton.subscribeWithPriority(10, () => {
       // No hacer nada al presionar el botón atrás
@@ -34,9 +35,20 @@ export class DashboardPage implements OnInit {
   }
 
   async ngOnInit() {
-    await this.userService.loadUser();
-    this.user = this.userService.user;
-    console.log(this.user);
+    const loading = await this.loadingController.create({
+      message: 'Cargando datos...',
+    });
+    await loading.present();
+
+    try {
+      await this.userService.loadUser();
+      this.user = this.userService.user;
+      console.log(this.user);
+    } catch (error) {
+      console.error('Error al cargar el usuario:', error);
+    } finally {
+      await loading.dismiss();
+    }
   }
 
   openCategoryDetails(categoryName: string) {

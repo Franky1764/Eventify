@@ -10,17 +10,38 @@ const DB_NAME = 'app.db';
   providedIn: 'root'
 })
 export class SqliteService {
-  private sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite);
+  private sqlite: SQLiteConnection;
   private db!: SQLiteDBConnection;
+  private isInitialized = false;
   private users: WritableSignal<User[]> = signal<User[]>([]);
 
-  constructor(private firebaseSvc: FirebaseService) { }
+  constructor(private firebaseSvc: FirebaseService) {
+    this.sqlite = new SQLiteConnection(CapacitorSQLite);
+  }
 
   async initializePlugin() {
+    if (this.isInitialized) {
+      return true;
+    }
+
     try {
       if (Capacitor.getPlatform() === 'web') {
+        console.log('Inicializando SQLite en modo web');
         await this.sqlite.initWebStore();
       }
+
+      await this.openDatabase();
+      this.isInitialized = true;
+      console.log('Plugin SQLite inicializado correctamente');
+      return true;
+    } catch (error) {
+      console.error('Error al inicializar el plugin SQLite:', error);
+      return false;
+    }
+  }
+
+  private async openDatabase() {
+    try {
       this.db = await this.sqlite.createConnection(
         DB_NAME,
         false,
@@ -29,31 +50,31 @@ export class SqliteService {
         false
       );
       await this.db.open();
-
-      const schema = `
-        CREATE TABLE IF NOT EXISTS users (
-          uid TEXT PRIMARY KEY,
-          username TEXT,
-          email TEXT,
-          nivel INTEGER,
-          nombre TEXT,
-          apellido TEXT,
-          edad INTEGER,
-          whatsapp TEXT,
-          carrera TEXT,
-          sede TEXT,
-          profilePhoto TEXT
-        );
-      `;
-
-      await this.db.execute(schema);
-      await this.loadUsers(); // Asegúrate de esperar la promesa
-      console.log('Plugin SQLite inicializado correctamente');
-      return true;
+      await this.createSchema();
+      await this.loadUsers();
     } catch (error) {
-      console.error('Error al inicializar el plugin SQLite:', error);
-      return false; // O maneja el error según tus necesidades
+      console.error('Error al abrir la base de datos:', error);
+      throw error;
     }
+  }
+
+  private async createSchema() {
+    const schema = `
+      CREATE TABLE IF NOT EXISTS users (
+        uid TEXT PRIMARY KEY,
+        username TEXT,
+        email TEXT,
+        nivel INTEGER,
+        nombre TEXT,
+        apellido TEXT,
+        edad INTEGER,
+        whatsapp TEXT,
+        carrera TEXT,
+        sede TEXT,
+        profilePhoto TEXT
+      );
+    `;
+    await this.db.execute(schema);
   }
 
   // OBTENER datos del usuario
@@ -146,6 +167,5 @@ export class SqliteService {
   async updateProfilePhoto(uid: string, photoUrl: string) {
     const query = `UPDATE users SET profilePhoto = '${photoUrl}' WHERE uid = '${uid}'`;
     await this.db.run(query);
-    
   }
 }
