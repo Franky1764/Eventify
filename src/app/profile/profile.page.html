@@ -9,7 +9,7 @@
   <ion-grid>
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" class="ion-text-center">
-        <ion-avatar>
+        <ion-avatar (click)="viewPhoto()">
           <img *ngIf="user && user.profilePhoto; else defaultImage" [src]="user.profilePhoto" alt="Foto de perfil">
           <ng-template #defaultImage>
             <img src="assets/img/profile.png" alt="Foto de perfil por defecto">

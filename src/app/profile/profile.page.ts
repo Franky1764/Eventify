@@ -8,6 +8,7 @@ import { FirebaseService } from '../services/firebase.service';
 import { User } from '../models/user.model';
 import { SqliteService } from '../services/sqlite.service';
 import { UtilsService } from '../services/utils.service';
+import { ViewPhotoComponent } from '../components/view-photo/view-photo.component';
 
 @Component({
   selector: 'app-profile',
@@ -119,6 +120,17 @@ export class ProfilePage implements OnInit {
       return await modal.present();
     } else {
       console.error('No user found');
+    }
+  }
+
+  async viewPhoto() {
+    if (this.user && this.user.profilePhoto) {
+      const modal = await this.modalController.create({
+        component: ViewPhotoComponent,
+        componentProps: { photoUrl: this.user.profilePhoto },
+        cssClass: 'transparent-modal'
+      });
+      return await modal.present();
     }
   }
 
