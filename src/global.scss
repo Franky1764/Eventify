@@ -26,70 +26,78 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 :root {
-    --ion-color-primary: #93459f;
-    --ion-color-primary-rgb: 56, 128, 255;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 255, 255, 255;
-    --ion-color-primary-shade: #43134c;
-    --ion-color-primary-tint: #9840b0;
-    --ion-background-color: #ffffff; /* Forzar el fondo blanco */
-    --ion-text-color: #000000; /* Color de texto negro */
-  }
-  
-  ion-content {
-    --background: var(--ion-background-color);
-    --color: var(--ion-text-color);
-  }
-  
-  ion-button.custom-button {
-    --background: linear-gradient(45deg, #B583FF, #D4A5FF, #FF77FF);
-    --background-hover: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF);
-    --color: white;
-    --padding-start: 10px;
-    --padding-end: 10px;
-    --padding-top: 8px;
-    --padding-bottom: 8px;
-    font-size: 14px; 
-    font-weight: 600;
-    width: 150px; 
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    margin: 0 auto; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
-    border: none;
-    background: linear-gradient(45deg, #B583FF, #D4A5FF, #FF77FF);
-    border-radius: 30px !important; 
-  }
-  
-  ion-button.custom-button:hover {
-    --background: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    transform: scale(1.05);
-  }
-  
-  :host(ion-button.custom-button:hover) {
-    --background: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    transform: scale(1.05);
+  --ion-color-primary: #93459f;
+  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #43134c;
+  --ion-color-primary-tint: #9840b0;
+  /* --ion-background-color: #ffffff; */
+  /* Forzar el fondo blanco */
+  --ion-text-color: #000000;
+  /* Color de texto negro */
+}
+
+ion-content {
+  --color: var(--ion-text-color);
+}
+
+ion-button.custom-button {
+  --background: linear-gradient(45deg, #B583FF, #D4A5FF, #FF77FF);
+  --background-hover: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF);
+  --color: white;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  width: 150px;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border: none;
+  background: linear-gradient(45deg, #B583FF, #D4A5FF, #FF77FF);
+  border-radius: 30px !important;
+}
+
+ion-button.custom-button:hover {
+  --background: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
+
+:host(ion-button.custom-button:hover) {
+  --background: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
+
+.fab-button {
+  --background: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF) !important;
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  ion-icon {
+    font-size: 2rem;
   }
 
-  .fab-button {
-    --background: linear-gradient(45deg, #D4A5FF, #FF77FF, #B583FF) !important; 
-    color: white; 
-    border-radius: 50%; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
-  
-    ion-icon {
-      font-size: 2rem; 
-    }
-  
-    &:hover {
-      transform: scale(1.1); 
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); 
-    }
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
   }
+}
 
-  .transparent-modal .modal-wrapper {
-    --background: transparent;
-    --backdrop-opacity: 0.8;
-  }
+ion-modal {
+  --background: transparent !important;
+}
+
+.blur-background {
+  -webkit-filter: blur(10px);
+  -moz-filter: blur(10px);
+  -o-filter: blur(10px);
+  -ms-filter: blur(10px);
+  filter: blur(10px);
+}

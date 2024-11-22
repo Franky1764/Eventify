@@ -13,6 +13,7 @@ import { AppComponent } from './app.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
 import { EventDetailComponent } from './components/event-detail/event-detail.component';
+import { ViewPhotoComponent } from './components/view-photo/view-photo.component';
 
 // Importar IonicStorageModule
 import { IonicStorageModule } from '@ionic/storage-angular';
@@ -31,7 +32,7 @@ import { defineCustomElements as jeepSqlite } from 'jeep-sqlite/loader';
 
 jeepSqlite(window);
 @NgModule({
-  declarations: [TabsComponent, AppComponent, CreateEventComponent, ProfileEditComponent, EventDetailComponent], 
+  declarations: [TabsComponent, AppComponent, CreateEventComponent, ProfileEditComponent, EventDetailComponent, ViewPhotoComponent], 
   imports: [
     BrowserModule,
     IonicModule.forRoot(),

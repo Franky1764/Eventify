@@ -125,11 +125,25 @@ export class ProfilePage implements OnInit {
 
   async viewPhoto() {
     if (this.user && this.user.profilePhoto) {
+      // Agregar clase blur a ProfilePage y Tabs
+      document.querySelector('app-profile')?.classList.add('blur-background');
+      document.querySelector('ion-tabs')?.classList.add('blur-background');
+      document.querySelector('ion-fab')?.classList.add('blur-background');
+
       const modal = await this.modalController.create({
         component: ViewPhotoComponent,
-        componentProps: { photoUrl: this.user.profilePhoto },
-        cssClass: 'transparent-modal'
+        componentProps: {
+          photoUrl: this.user.profilePhoto
+        }
       });
+
+      modal.onDidDismiss().then(() => {
+        // Quitar clase blur cuando el modal se cierre
+        document.querySelector('app-profile')?.classList.remove('blur-background');
+        document.querySelector('ion-tabs')?.classList.remove('blur-background');
+        document.querySelector('ion-fab')?.classList.remove('blur-background');
+      });
+
       return await modal.present();
     }
   }
