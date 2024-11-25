@@ -4,7 +4,7 @@ import { EventDetailComponent } from '../components/event-detail/event-detail.co
 import { FirebaseService} from '../services/firebase.service';
 import { getDocs, collection} from '@angular/fire/firestore';
 import { UtilsService } from '../services/utils.service';
-
+import { ExportToExcelService } from '../services/export-to-excel.service';
 
 
 
@@ -20,7 +20,8 @@ export class NewsPage {
   constructor(
     private modalController: ModalController,
     private firebaseService: FirebaseService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private exportToExcelService: ExportToExcelService,
   ) {}
 
   async ngOnInit() {
@@ -66,4 +67,14 @@ export class NewsPage {
       await this.loadEvents();
     }
   }
+ 
+  downloadEvents() {
+    if (this.events.length > 0) {
+      this.exportToExcelService.exportAsExcel(this.events, 'EventosEasyMMeeT');
+    } else {
+      console.error('No hay eventos para descargar');
+    }
+  }
+
 }
+
