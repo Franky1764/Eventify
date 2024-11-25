@@ -16,8 +16,8 @@ export class DashboardPage implements OnInit {
 
   categories = [
     { name: 'Talleres', icon: 'construct-outline' },
-    { name: 'Desafios', icon: 'ribbon-outline' },
-    { name: 'Mentorias', icon: 'people-circle-outline' },
+    { name: 'Desafíos', icon: 'ribbon-outline' },
+    { name: 'Mentorías', icon: 'people-circle-outline' },
     { name: 'Charlas', icon: 'mic-outline' },
     { name: 'Stands', icon: 'megaphone-outline' }
   ];
@@ -28,8 +28,9 @@ export class DashboardPage implements OnInit {
     private userService: UserService,
     private loadingController: LoadingController
   ) {
+    // Manejar el botón "Atrás" en dispositivos móviles
     this.platform.backButton.subscribeWithPriority(10, () => {
-      // No hacer nada al presionar el botón atrás
+      // No realizar ninguna acción al presionar "Atrás" en el dashboard
     });
     addIcons({ add });
   }
@@ -41,9 +42,10 @@ export class DashboardPage implements OnInit {
     await loading.present();
 
     try {
+      // Cargar los datos del usuario desde el servicio
       await this.userService.loadUser();
       this.user = this.userService.user;
-      console.log(this.user);
+      console.log('Usuario cargado:', this.user);
     } catch (error) {
       console.error('Error al cargar el usuario:', error);
     } finally {
@@ -52,6 +54,8 @@ export class DashboardPage implements OnInit {
   }
 
   openCategoryDetails(categoryName: string) {
-    this.router.navigate([`/tabs/dashboard/${categoryName.toLowerCase()}`]);
+    // Normalizar el nombre de la categoría para la URL
+    const formattedCategoryName = categoryName.replace(/\s+/g, '-').toLowerCase();
+    this.router.navigate([`/category-details/${formattedCategoryName}`]);
   }
 }
