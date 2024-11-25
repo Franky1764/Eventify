@@ -71,7 +71,8 @@ export class SqliteService {
         whatsapp TEXT,
         carrera TEXT,
         sede TEXT,
-        profilePhoto TEXT
+        profilePhoto TEXT,
+        profilePhotoData TEXT
       );
     `;
     await this.db.execute(schema);
@@ -102,50 +103,36 @@ export class SqliteService {
     return user;
   }
 
-  async addUser(data: any) {
+  async addUser(data: User) {
     const existingUser = await this.getUserById(data.uid);
-    if (existingUser) {
-      // Si el usuario existe, actualizarlo
-      const query = `
-        UPDATE users SET 
-          username = ?, email = ?, nivel = ?, nombre = ?, apellido = ?, edad = ?, whatsapp = ?, carrera = ?, sede = ?, profilePhoto = ?
-        WHERE uid = ?
-      `;
-      const values = [
-        data.username, data.email, data.nivel, data.nombre, data.apellido, data.edad, data.whatsapp, data.carrera, data.sede, data.profilePhoto, data.uid
-      ];
-      const result = await this.db.run(query, values);
-      await this.loadUsers();
-      return result;
-    } else {
-      // Si el usuario no existe, insertarlo
-      const query = `
-        INSERT INTO users (
-          uid, username, email, nivel, nombre, apellido, edad, whatsapp, carrera, sede, profilePhoto
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
-      const values = [
-        data.uid, data.username, data.email, data.nivel, data.nombre, data.apellido, data.edad, data.whatsapp, data.carrera, data.sede, data.profilePhoto
-      ];
-      const result = await this.db.run(query, values); // Ejecutar la inserción
-      await this.loadUsers();
-      return result;
-    }
+    const query = existingUser
+      ? `UPDATE users SET 
+          username = ?, email = ?, nivel = ?, nombre = ?, apellido = ?, edad = ?, whatsapp = ?, carrera = ?, sede = ?, profilePhoto = ?, profilePhotoData = ?
+        WHERE uid = ?`
+      : `INSERT INTO users (
+          uid, username, email, nivel, nombre, apellido, edad, whatsapp, carrera, sede, profilePhoto, profilePhotoData
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    const values = existingUser
+      ? [data.username, data.email, data.nivel, data.nombre, data.apellido, data.edad, data.whatsapp, data.carrera, data.sede, data.profilePhoto, data.profilePhotoData, data.uid]
+      : [data.uid, data.username, data.email, data.nivel, data.nombre, data.apellido, data.edad, data.whatsapp, data.carrera, data.sede, data.profilePhoto, data.profilePhotoData];
+
+    await this.db.run(query, values);
+    await this.loadUsers();
   }
 
   async updateUser(user: User) {
     const query = `
       UPDATE users SET 
-        nombre = ?, apellido = ?, edad = ?, whatsapp = ?, carrera = ?, sede = ?
+        username = ?, email = ?, nivel = ?, nombre = ?, apellido = ?, edad = ?, whatsapp = ?, carrera = ?, sede = ?, profilePhoto = ?, profilePhotoData = ?
       WHERE uid = ?
     `;
     const values = [
-      user.nombre, user.apellido, user.edad, user.whatsapp, user.carrera, user.sede, user.uid
+      user.username, user.email, user.nivel, user.nombre, user.apellido, user.edad, user.whatsapp, user.carrera, user.sede, user.profilePhoto, user.profilePhotoData, user.uid
     ];
     const result = await this.db.run(query, values);
-    this.loadUsers();
-    // Actualiza los datos en Firebase
     await this.firebaseSvc.updateUserInFirestore(user);
+    await this.loadUsers();
     return result;
   }
 

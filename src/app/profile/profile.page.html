@@ -10,10 +10,7 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" class="ion-text-center">
         <ion-avatar (click)="viewPhoto()">
-          <img *ngIf="user && user.profilePhoto; else defaultImage" [src]="user.profilePhoto" alt="Foto de perfil">
-          <ng-template #defaultImage>
-            <img src="assets/img/profile.png" alt="Foto de perfil por defecto">
-          </ng-template>
+          <img [src]="user?.profilePhotoData || 'assets/img/profile.png'" alt="Foto de perfil">
         </ion-avatar>
         <ion-button fill="clear" color="secondary" class="camera-button" (click)="takePhoto()">
           <ion-icon name="camera-outline"></ion-icon>

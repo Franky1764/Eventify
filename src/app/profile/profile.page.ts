@@ -49,12 +49,18 @@ export class ProfilePage implements OnInit {
       await loading.present();
       try {
         // Redimensionar la imagen antes de subirla
-        const resizedImage = await this.resizeImage(image.dataUrl, 800, 800);
+      const resizedImage = await this.resizeImage(image.dataUrl, 800, 800);
 
-        const photoUrl = await this.firebaseService.uploadImage(resizedImage, `profilePhotos/${this.user.uid}.jpg`);
-        await this.userService.updateProfilePhoto(this.user.uid, photoUrl);
-        this.user.profilePhoto = photoUrl;
-        await this.sqliteService.updateUser(this.user);
+      // Actualizar `profilePhotoData` con la imagen nueva
+      this.user.profilePhotoData = resizedImage;
+
+      // Subir la imagen a Firebase Storage y obtener la URL
+      const photoUrl = await this.firebaseService.uploadImage(resizedImage, `profilePhotos/${this.user.uid}.jpg`);
+      this.user.profilePhoto = photoUrl;
+
+      // Actualizar el usuario en SQLite
+      await this.sqliteService.updateUser(this.user);
+     
       } catch (error) {
         console.error('Error procesando la imagen:', error);
       } finally {
@@ -133,7 +139,7 @@ export class ProfilePage implements OnInit {
       const modal = await this.modalController.create({
         component: ViewPhotoComponent,
         componentProps: {
-          photoUrl: this.user.profilePhoto
+          photoUrl: this.user.profilePhotoData
         }
       });
 

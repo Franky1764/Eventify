@@ -6,6 +6,7 @@ import { UtilsService } from '../services/utils.service';
 import { User } from '../models/user.model';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
+import { SqliteService } from '../services/sqlite.service';
 
 @Component({
   selector: 'app-authentication',
@@ -20,7 +21,8 @@ export class AuthenticationPage {
     private alertController: AlertController,
     private utilsSvc: UtilsService,
     private userService: UserService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private sqliteService: SqliteService // Importamos SqliteService
   ) {
     this.authForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -35,18 +37,41 @@ export class AuthenticationPage {
 
       try {
         const { email, password } = this.authForm.value;
-        await this.firebaseService.signIn({ email, password } as User);
+        // Autenticar al usuario con Firebase
+        const userCredential = await this.firebaseService.signIn(email, password);
+        const userId = userCredential.user?.uid;
 
-        // Cargar el usuario en UserService
-      await this.userService.loadUser();
+        if (userId) {
+          // Obtener datos del usuario desde Firebase
+          const userData = await this.firebaseService.getUserData(userId);
+          
+          if (userData) {
+            // Si el usuario tiene una foto de perfil en Firebase Storage
+            if (userData.profilePhoto) {
+              // Usar directamente la URL almacenada en profilePhoto
+              const imageBase64 = await this.firebaseService.downloadImageAsBase64(userData.profilePhoto);
+              userData.profilePhotoData = imageBase64;
+            }
+            
+            // Guardar datos del usuario en SQLite
+            await this.sqliteService.addUser(userData);
+            
+            // Cargar usuario desde SQLite
+            await this.userService.loadUser();
 
-        // Redirigir a la página de Dashboard
-        this.router.navigate(['/tabs/dashboard'], { replaceUrl: true });
-        
-      } catch (error) {
+            // Navegar al Dashboard
+            this.router.navigate(['/tabs/dashboard'], { replaceUrl: true });
+          } else {
+            this.showAlert('No se pudieron obtener los datos del usuario');
+          }
+        } else {
+          this.showAlert('No se pudo obtener el ID del usuario');
+        }
+      } catch (error: any) {
+        // Manejo de errores
         if (error.code === 'auth/user-not-found') {
           this.showAlert('Usuario no existe');
-        } else if (error.code === 'auth/invalid-credential') {
+        } else if (error.code === 'auth/wrong-password') {
           this.showAlert('Clave incorrecta');
         } else {
           this.showAlert('Error de autenticación');

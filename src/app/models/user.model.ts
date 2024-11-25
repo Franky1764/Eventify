@@ -11,4 +11,5 @@ export interface User {
     carrera: string,
     sede: string,
     profilePhoto: string;
+    profilePhotoData?: string;
 }

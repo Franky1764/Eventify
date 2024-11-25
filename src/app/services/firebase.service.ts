@@ -9,26 +9,32 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { finalize } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { SqliteService } from './sqlite.service';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable, from } from 'rxjs';
+import { mergeMap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { getStorage } from 'firebase/storage';
+import { initializeApp } from 'firebase/app';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
   private userId: string | null = null;
+  private app = initializeApp(environment.firebaseConfig);
+  private firebaseStorage = getStorage(this.app);
 
   auth = inject(AngularFireAuth);
+  private http = inject(HttpClient);
   firestore = inject(AngularFirestore);
   storage = inject(AngularFireStorage);
   storageSvc = inject(StorageService);
-  private router: Router;
   private injector: Injector;
   private _sqliteService: SqliteService;
 
   constructor(injector: Injector, private afAuth: AngularFireAuth) {
     this.injector = injector;
-    this.router = injector.get(Router);
     // Establecer persistencia en 'local' para mantener la sesión
     this.afAuth.setPersistence('local');
   }
@@ -45,28 +51,11 @@ export class FirebaseService {
   }
 
   //CRUD USUARIOS
-  async signIn(user: User): Promise<void> {
-    try {
-      const userCredential = await this.auth.signInWithEmailAndPassword(user.email, user.password);
-      const userId = userCredential.user?.uid;
-      if (userId) {
-        const userDoc = await this.firestore.collection('users').doc(userId).get().toPromise();
-        if (userDoc.exists) {
-          const userData = userDoc.data() as User;
-          userData.uid = userId; // Asegurarse de que el uid se guarde en userData
-          console.log('User data:', JSON.stringify(userData));
-          await this.sqliteService.addUser(userData); // Guardar el usuario en SQLite
-          await this.setSession(userId);
-          // User signed in successfully
-        } else {
-          console.error('User document not found in Firestore');
-        }
-      } else {
-        console.error('No user ID found after sign-in');
-      }
-    } catch (error) {
-      console.error('Error signing in:', error);
-    }
+  async signIn(email: string, password: string) {
+    const userCredential = await this.auth.signInWithEmailAndPassword(email, password);
+    this.userId = userCredential.user?.uid;
+    await this.setSession(this.userId);
+    return userCredential;
   }
 
   signUp(user: User) {
@@ -81,6 +70,23 @@ export class FirebaseService {
   async getCurrentUserId(): Promise<string | null> {
     const user = await this.afAuth.currentUser;
     return user ? user.uid : null;
+  }
+
+  async getUserData(userId: string): Promise<User | null> {
+    try {
+      const userDoc = await this.firestore.collection('users').doc<User>(userId).get().toPromise();
+      if (userDoc?.exists) {
+        const userData = userDoc.data();
+        if (userData) {
+          userData.uid = userId; // Asegurarse de agregar el UID al objeto
+          return userData as User;
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener datos del usuario:', error);
+      throw error;
+    }
   }
 
   deleteUser() {
@@ -102,6 +108,40 @@ export class FirebaseService {
       user = { ...existingUser, ...user };
     }
     return this.firestore.collection('users').doc(user.uid).update(user);
+  }
+
+  //DESCARGAR LA IMAGEN DEL USUARIO PARA GUARDARLA EN SQLITE
+  async downloadImageAsBase64(imageUrl: string): Promise<string> {
+    try {
+      // Obtener el token de autenticación
+      const token = await (await this.auth.currentUser).getIdToken();
+      
+      // Descargar la imagen directamente de la URL con el token de autenticación
+      const response = await fetch(imageUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+
+      // Obtener el blob de la imagen
+      const blob = await response.blob();
+      
+      // Convertir blob a base64
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+    } catch (error) {
+      console.error('Error al descargar la imagen:', error);
+      return '';
+    }
   }
 
   async signOut(): Promise<void> {
