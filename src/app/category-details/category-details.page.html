@@ -1,13 +1,48 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ categoryName }}</ion-title>
+    <ion-title>Eventos en {{ categoryName }}</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/dashboard"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let event of events">
-      {{ event.name }}
-    </ion-item>
-  </ion-list>
+  <!-- Verificamos si los eventos están cargando -->
+  <ng-container *ngIf="!isLoading; else loading">
+    <!-- Mostramos la lista de eventos si existen -->
+    <ng-container *ngIf="events.length > 0; else noEvents">
+      <ion-list>
+        <ion-item *ngFor="let event of events">
+          <ion-label>
+            <h2>{{ event.tituloEvento }}</h2>
+            <p><strong>Fecha:</strong> {{ event.fechaActividad | date }}</p>
+            <p><strong>Modalidad:</strong> {{ event.modalidad }}</p>
+            <p><strong>Sede:</strong> {{ event.sede }}</p>
+          </ion-label>
+          <!-- Opciones adicionales para editar o eliminar eventos -->
+          <ion-buttons slot="end">
+            <ion-button color="secondary" (click)="editEvent(event)">Editar</ion-button>
+            <ion-button color="danger" (click)="deleteEvent(event.uid)">Eliminar</ion-button>
+          </ion-buttons>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+  </ng-container>
+
+  <!-- Plantilla para el estado de carga -->
+  <ng-template #loading>
+    <div class="ion-text-center">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando eventos...</p>
+    </div>
+  </ng-template>
+
+  <!-- Mensaje para categorías sin eventos -->
+  <ng-template #noEvents>
+    <ion-text color="medium" class="ion-text-center">
+      <h3>No hay eventos registrados en esta categoría.</h3>
+      <p>Regresa más tarde para explorar nuevos eventos.</p>
+    </ion-text>
+  </ng-template>
 </ion-content>

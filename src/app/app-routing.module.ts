@@ -43,31 +43,24 @@ const routes: Routes = [
       },
       {
         path: 'news',
-        loadChildren: () => import('./news/news.module').then( m => m.NewsPageModule),
+        loadChildren: () => import('./news/news.module').then(m => m.NewsPageModule),
         canActivate: [AuthGuard]
-      },
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
       }
     ]
+  },
+  {
+    path: 'category-details/:categoryName',
+    loadChildren: () => import('./category-details/category-details.module').then(m => m.CategoryDetailsPageModule),
+    canActivate: [AuthGuard] // Protegemos el acceso a las categorías
   },
   {
     path: 'not-found',
     loadChildren: () => import('./not-found/not-found.module').then(m => m.NotFoundPageModule)
   },
-  { path: '**', redirectTo: 'not-found' },
   {
-    path: 'category-details',
-    loadChildren: () => import('./category-details/category-details.module').then( m => m.CategoryDetailsPageModule)
-  },
-  {
-    path: 'category-details/:categoryName',
-    loadChildren: () => import('./category-details/category-details.module').then(m => m.CategoryDetailsPageModule)
+    path: '**',
+    redirectTo: 'not-found'
   }
-
-
 ];
 
 @NgModule({

@@ -2,6 +2,7 @@ import { Injectable, signal, WritableSignal } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { User } from '../models/user.model';
+import { Event } from '../models/event.model';
 import { FirebaseService } from './firebase.service';
 
 const DB_NAME = 'app.db';
@@ -14,6 +15,7 @@ export class SqliteService {
   private db!: SQLiteDBConnection;
   private isInitialized = false;
   private users: WritableSignal<User[]> = signal<User[]>([]);
+  private events: WritableSignal<Event[]> = signal<Event[]>([]);
 
   constructor(private firebaseSvc: FirebaseService) {
     this.sqlite = new SQLiteConnection(CapacitorSQLite);
@@ -52,6 +54,7 @@ export class SqliteService {
       await this.db.open();
       await this.createSchema();
       await this.loadUsers();
+      await this.loadEvents();
     } catch (error) {
       console.error('Error al abrir la base de datos:', error);
       throw error;
@@ -59,7 +62,7 @@ export class SqliteService {
   }
 
   private async createSchema() {
-    const schema = `
+    const userSchema = `
       CREATE TABLE IF NOT EXISTS users (
         uid TEXT PRIMARY KEY,
         username TEXT,
@@ -75,9 +78,34 @@ export class SqliteService {
         profilePhotoData TEXT
       );
     `;
-    await this.db.execute(schema);
-  }
 
+    const eventSchema = `
+      CREATE TABLE IF NOT EXISTS events (
+        uid TEXT PRIMARY KEY,
+        sede TEXT,
+        tipoActividad TEXT,
+        tituloEvento TEXT,
+        fechaActividad TEXT,
+        horarioInicio TEXT,
+        horarioTermino TEXT,
+        dependencia TEXT,
+        modalidad TEXT,
+        docenteRepresentante TEXT,
+        invitados TEXT,
+        directorParticipante TEXT,
+        liderParticipante TEXT,
+        subliderParticipante TEXT,
+        embajadores TEXT,
+        inscritos INTEGER,
+        asistentesPresencial INTEGER,
+        asistentesOnline INTEGER,
+        enlaces TEXT
+      );
+    `;
+
+    await this.db.execute(userSchema);
+    await this.db.execute(eventSchema);
+  }
   // OBTENER datos del usuario
   getUser() {
     return this.users.asReadonly(); // Devuelve un ReadableSignal
@@ -154,5 +182,75 @@ export class SqliteService {
   async updateProfilePhoto(uid: string, photoUrl: string) {
     const query = `UPDATE users SET profilePhoto = '${photoUrl}' WHERE uid = '${uid}'`;
     await this.db.run(query);
+  }
+ 
+  // CRUD para Eventos (Métodos)
+  async loadEvents() {
+    try {
+      const events = await this.db.query(`SELECT * FROM events`);
+      this.events.set(events.values || []);
+    } catch (error) {
+      console.error('Error al cargar los eventos:', error);
+    }
+  }
+
+  async getEventById(uid: string) {
+    const query = `SELECT * FROM events WHERE uid = ?`;
+    const res = await this.db.query(query, [uid]);
+    return res.values.length > 0 ? res.values[0] : null;
+  }
+
+  async addEvent(event: Event) {
+    const existingEvent = await this.getEventById(event.uid);
+    if (existingEvent) {
+      // Si el evento existe, actualizarlo
+      const query = `
+        UPDATE events SET 
+          sede = ?, tipoActividad = ?, tituloEvento = ?, fechaActividad = ?, 
+          horarioInicio = ?, horarioTermino = ?, dependencia = ?, modalidad = ?, 
+          docenteRepresentante = ?, invitados = ?, directorParticipante = ?, 
+          liderParticipante = ?, subliderParticipante = ?, embajadores = ?, 
+          inscritos = ?, asistentesPresencial = ?, asistentesOnline = ?, enlaces = ?
+        WHERE uid = ?
+      `;
+      const values = [
+        event.sede, event.tipoActividad, event.tituloEvento, event.fechaActividad,
+        event.horarioInicio, event.horarioTermino, event.dependencia, event.modalidad,
+        event.docenteRepresentante, event.invitados, event.directorParticipante,
+        event.liderParticipante, event.subliderParticipante, event.embajadores,
+        event.inscritos, event.asistentesPresencial, event.asistentesOnline, event.enlaces,
+        event.uid
+      ];
+      const result = await this.db.run(query, values);
+      await this.loadEvents();
+      return result;
+    } else {
+      // Si el evento no existe, insertarlo
+      const query = `
+        INSERT INTO events (
+          uid, sede, tipoActividad, tituloEvento, fechaActividad, horarioInicio, horarioTermino, 
+          dependencia, modalidad, docenteRepresentante, invitados, directorParticipante, 
+          liderParticipante, subliderParticipante, embajadores, inscritos, 
+          asistentesPresencial, asistentesOnline, enlaces
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      const values = [
+        event.uid, event.sede, event.tipoActividad, event.tituloEvento, event.fechaActividad,
+        event.horarioInicio, event.horarioTermino, event.dependencia, event.modalidad,
+        event.docenteRepresentante, event.invitados, event.directorParticipante,
+        event.liderParticipante, event.subliderParticipante, event.embajadores,
+        event.inscritos, event.asistentesPresencial, event.asistentesOnline, event.enlaces
+      ];
+      const result = await this.db.run(query, values);
+      await this.loadEvents();
+      return result;
+    }
+  }
+
+  async deleteEventById(uid: string) {
+    const query = `DELETE FROM events WHERE uid = ?`;
+    const result = await this.db.query(query, [uid]);
+    await this.loadEvents();
+    return result;
   }
 }
