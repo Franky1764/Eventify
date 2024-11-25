@@ -43,17 +43,21 @@ export class AppComponent {
     }
   }
 
-  checkAuthentication() {
-    this.firebaseSvc.getAuthState().subscribe(async user => {
-      if (user) {
-        console.log('Usuario autenticado:', user.uid);
-        await this.userService.loadUser(); // Cargar usuario desde SQLite
+  async checkAuthentication() {
+    try {
+      await this.userService.loadUser();
+      if (this.userService.user) {
+        console.log('Usuario autenticado localmente:', this.userService.user.uid);
+        // Navegar a la página de Dashboard
         this.router.navigate(['/tabs/dashboard'], { replaceUrl: true });
       } else {
-        console.log('No hay usuario autenticado');
+        console.log('No hay usuario autenticado localmente');
         this.router.navigate(['/login'], { replaceUrl: true });
       }
-    });
+    } catch (error) {
+      console.error('Error al comprobar la autenticación:', error);
+      this.router.navigate(['/login'], { replaceUrl: true });
+    }
   }
 
   async onLogout() {

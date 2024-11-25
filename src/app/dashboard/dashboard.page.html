@@ -3,10 +3,7 @@
     <ion-title>Easy MMeeT</ion-title>
     <ion-buttons slot="end" [routerLink]="['../profile']">
       <ion-avatar>
-        <img *ngIf="user && user.profilePhoto; else defaultImage" [src]="user.profilePhoto" alt="Foto de perfil">
-        <ng-template #defaultImage>
-          <img src="assets/img/profile.png" alt="Foto de perfil por defecto">
-        </ng-template>
+        <img [src]="user?.profilePhotoData || 'assets/img/profile.png'" alt="Foto de perfil">
       </ion-avatar>
     </ion-buttons>
   </ion-toolbar>
