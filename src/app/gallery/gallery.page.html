@@ -9,7 +9,7 @@
     <ion-row>
       <ion-col size="6" *ngFor="let photo of photos">
         <ion-card>
-          <img [src]="photo.url" alt="{{ photo.title }}" />
+          <ion-img [src]="photo.url" alt="{{ photo.title }}"></ion-img>
           <ion-card-content>
             <p>{{ photo.title }}</p>
           </ion-card-content>
