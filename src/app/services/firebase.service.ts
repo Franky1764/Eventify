@@ -234,22 +234,23 @@ export class FirebaseService {
 
 
   // Obtener todos los eventos desde Firestore
-async getEventsByCategory(category: string): Promise<Event[]> {
-  try {
-    const querySnapshot = await this.firestore
-      .collection<Event>('events', (ref) => ref.where('tipoActividad', '==', category))
-      .get()
-      .toPromise();
-
-    // Mapea los resultados a un arreglo de objetos Event
-    return querySnapshot?.docs.map((doc) => ({
-      uid: doc.id,
-      ...doc.data(),
-    })) || [];
-  } catch (error) {
-    console.error('Error al obtener eventos por categoría:', error);
-    return [];
+  async getEventsByCategory(categoryName: string): Promise<Event[]> {
+    try {
+      const querySnapshot = await this.firestore
+        .collection<Event>('events', (ref) =>
+          ref.where('tipoActividad', '==', categoryName)
+        )
+        .get()
+        .toPromise();
+  
+      return querySnapshot?.docs.map((doc) => ({
+        uid: doc.id,
+        ...doc.data(),
+      })) || [];
+    } catch (error) {
+      console.error('Error al obtener eventos por categoría:', error);
+      return [];
+    }
   }
-}
 
 }
