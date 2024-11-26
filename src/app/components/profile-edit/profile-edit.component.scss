@@ -43,3 +43,12 @@ p {
     font-family: 'Poppins', sans-serif;
     font-weight: 300; 
 }
+
+ion-toolbar {
+  --background: #ffffff; /* Color de fondo blanco */
+  --ion-toolbar-text-color: #000000; /* Color del texto en negro */
+}
+
+ion-button {
+  color: #000000; /* Color del texto del botón en negro */
+}

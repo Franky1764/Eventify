@@ -16,8 +16,8 @@ export class DashboardPage implements OnInit {
 
   categories = [
     { name: 'Talleres', icon: 'construct-outline' },
-    { name: 'Desafíos', icon: 'ribbon-outline' },
-    { name: 'Mentorías', icon: 'people-circle-outline' },
+    { name: 'Desafios', icon: 'ribbon-outline' },
+    { name: 'Mentorias', icon: 'people-circle-outline' },
     { name: 'Charlas', icon: 'mic-outline' },
     { name: 'Stands', icon: 'megaphone-outline' }
   ];
@@ -54,7 +54,7 @@ export class DashboardPage implements OnInit {
   }
 
   openCategoryDetails(categoryName: string) {
-    // Normalizar el nombre de la categoría para la URL
+    // Reemplaza espacios por guiones y convierte a minúsculas para la URL
     const formattedCategoryName = categoryName.replace(/\s+/g, '-').toLowerCase();
     this.router.navigate([`/category-details/${formattedCategoryName}`]);
   }
