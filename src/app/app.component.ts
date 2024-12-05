@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { ToastController } from '@ionic/angular';
 import { StorageService } from './services/storage.service';
+import { NetworkService } from './services/network.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,8 @@ export class AppComponent {
     private sqliteService: SqliteService,
     private router: Router,
     private toastController: ToastController,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private networkService: NetworkService
   ) {
     this.initializeApp();
   }

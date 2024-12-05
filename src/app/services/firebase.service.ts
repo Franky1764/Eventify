@@ -16,11 +16,13 @@ import { HttpClient } from '@angular/common/http';
 import { getStorage } from 'firebase/storage';
 import { initializeApp } from 'firebase/app';
 import { environment } from 'src/environments/environment';
+import { Network } from '@capacitor/network';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+  private pendingUpdates: {userId: string, data: any}[] = [];
   private userId: string | null = null;
   private app = initializeApp(environment.firebaseConfig);
   private firebaseStorage = getStorage(this.app);
@@ -48,6 +50,31 @@ export class FirebaseService {
 
   private async setSession(userId: string): Promise<void> {
     await this.storageSvc.setSession({ userId });
+  }
+
+  //LOGICA PARA ACTUALIZAR DATOS EN MODO OFFLINE
+  hasPendingUpdates(): boolean {
+    return this.pendingUpdates.length > 0;
+  }
+  
+  private queueUpdate(user: User) {
+    this.pendingUpdates.push({
+      userId: user.uid,
+      data: user
+    });
+  }
+  
+  async syncPendingUpdates() {
+    if (this.pendingUpdates.length > 0) {
+      for (const update of this.pendingUpdates) {
+        try {
+          await this.firestore.collection('users').doc(update.userId).update(update.data);
+          this.pendingUpdates = this.pendingUpdates.filter(u => u.userId !== update.userId);
+        } catch (error) {
+          console.error('Error syncing update:', error);
+        }
+      }
+    }
   }
 
   //CRUD USUARIOS
@@ -101,13 +128,22 @@ export class FirebaseService {
     return this.firestore.collection('users').doc<User>(userId).valueChanges();
   }
 
-  updateUserInFirestore(user: User) {
-    // Si el usuario ya existe, se actualizan sus datos
-    const existingUser = this.sqliteService.getUser()[0];
-    if (existingUser) {
-      user = { ...existingUser, ...user };
+  async updateUserInFirestore(user: User) {
+    try {
+      const networkStatus = await Network.getStatus();
+      
+      if (networkStatus.connected) {
+        await this.firestore.collection('users').doc(user.uid).update(user);
+        return true;
+      } else {
+        this.queueUpdate(user);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error updating Firestore:', error);
+      this.queueUpdate(user);
+      return false;
     }
-    return this.firestore.collection('users').doc(user.uid).update(user);
   }
 
   //DESCARGAR LA IMAGEN DEL USUARIO PARA GUARDARLA EN SQLITE

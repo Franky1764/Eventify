@@ -45,30 +45,45 @@ export class ProfileEditComponent implements OnInit {
     if (this.profileForm.valid) {
       const loading = await this.utilsSvc.loading();
       await loading.present();
-      const user = this.userService.user;
-      if (user && user.uid) {
+      
+      try {
+        const user = this.userService.user;
+        if (!user?.uid) throw new Error('No user found');
+
         const datos = this.profileForm.value;
-        try {
-          // Actualiza los datos en SQLite
-          await this.sqliteService.updateUser({ ...this.profile, ...datos });
-          loading.dismiss();
-          console.log('Usuario actualizado');
-          const alert = await this.alertController.create({
-            header: 'Éxito',
-            message: 'Datos actualizados exitosamente.',
-            buttons: ['OK']
-          });
-          await alert.present();
-          this.modalController.dismiss(datos); 
-        } catch (error) {
-          loading.dismiss();
-          console.error('Error al actualizar el usuario', error);
-        }
-      } else {
-        console.error('No hay usuario logueado');
+        const updatedUser = { ...this.profile, ...datos };
+
+        // Primero actualizar SQLite
+        await this.sqliteService.updateUser(updatedUser);
+        
+        // Intentar actualizar Firestore (manejará offline automáticamente)
+        const isOnline = await this.firebaseSvc.updateUserInFirestore(updatedUser);
+        
+        loading.dismiss();
+        
+        const message = isOnline 
+          ? 'Datos actualizados exitosamente.'
+          : 'Datos guardados localmente. Se sincronizarán cuando haya conexión.';
+        
+        const alert = await this.alertController.create({
+          header: 'Éxito',
+          message: message,
+          buttons: ['OK']
+        });
+        await alert.present();
+        
+        this.modalController.dismiss(datos);
+      } catch (error) {
+        loading.dismiss();
+        console.error('Error updating profile:', error);
+        
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'No se pudieron guardar los cambios',
+          buttons: ['OK']
+        });
+        await alert.present();
       }
-    } else {
-      console.error('Formulario inválido');
     }
   }
   
