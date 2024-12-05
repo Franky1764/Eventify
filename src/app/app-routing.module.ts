@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes, CanActivate } from '@angular/router';
 import { TabsComponent } from './tabs/tabs.component';
 import { AuthGuard } from './services/auth.guard'; // Importamos AuthGuard
 
@@ -45,9 +45,21 @@ const routes: Routes = [
         path: 'news',
         loadChildren: () => import('./news/news.module').then(m => m.NewsPageModule),
         canActivate: [AuthGuard]
-      }
+      },
+      {
+        path: 'gallery',
+        loadChildren: () => import('./gallery/gallery.module').then( m => m.GalleryPageModule),
+        canActivate: [AuthGuard]
+      },
     ]
   },
+
+  {
+    path: '',
+    redirectTo: 'tabs/gallery',
+    pathMatch: 'full'
+  },
+
   {
     path: 'category-details/:categoryName',
     loadChildren: () => import('./category-details/category-details.module').then(m => m.CategoryDetailsPageModule),
@@ -57,10 +69,12 @@ const routes: Routes = [
     path: 'not-found',
     loadChildren: () => import('./not-found/not-found.module').then(m => m.NotFoundPageModule)
   },
+
   {
     path: '**',
     redirectTo: 'not-found'
   }
+
 ];
 
 @NgModule({
