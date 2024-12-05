@@ -15,6 +15,7 @@ import { SqliteService } from '../services/sqlite.service';
 })
 export class AuthenticationPage {
   authForm: FormGroup;
+  showPassword: boolean = false;
 
   constructor(
     private router: Router,
@@ -85,6 +86,10 @@ export class AuthenticationPage {
         loading.dismiss();
       }
     }
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
   async showAlert(message: string) {

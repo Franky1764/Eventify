@@ -36,6 +36,19 @@ ion-content {
     --border-radius: 20px;
     --padding-start: 15px;
     margin-bottom: 15px;
+
+    // Nuevos estilos para el icono del ojo
+    ion-icon[slot="end"] {
+      font-size: 1.2rem;
+      color: #6c757d; // Usando el mismo color gris que otros elementos
+      margin-right: 5px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      
+      &:hover {
+        color: #8a2be2; // Usando el mismo color del enlace/marca
+      }
+    }
   }
   
   ion-input {
@@ -103,4 +116,3 @@ ion-content {
     color: #8a2be2; /* Color de enlace */
     text-decoration: none;
   }
-  

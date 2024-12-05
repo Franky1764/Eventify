@@ -23,7 +23,16 @@
 
       <ion-item>
         <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-        <ion-input formControlName="password" placeholder="Password" type="password"></ion-input>
+        <ion-input 
+          formControlName="password" 
+          [type]="showPassword ? 'text' : 'password'" 
+          placeholder="Password">
+        </ion-input>
+        <ion-icon 
+          [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
+          slot="end"
+          (click)="togglePassword()">
+        </ion-icon>
       </ion-item>
 
       <a class="forgot-password" href="#">¿Olvidaste tu contraseña?</a>
