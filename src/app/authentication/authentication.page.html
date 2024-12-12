@@ -21,18 +21,19 @@
         <ion-input formControlName="email" placeholder="Email" type="email"></ion-input>
       </ion-item>
 
-      <ion-item>
+      <ion-item lines="none">
         <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-        <ion-input 
-          formControlName="password" 
-          [type]="showPassword ? 'text' : 'password'" 
-          placeholder="Password">
-        </ion-input>
-        <ion-icon 
+        <ion-input
+          formControlName="password"
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Password"
+          class="password-input">
+          <ion-icon
           [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
-          slot="end"
+          class="password-toggle-icon"
           (click)="togglePassword()">
         </ion-icon>
+      </ion-input>
       </ion-item>
 
       <a class="forgot-password" href="#">¿Olvidaste tu contraseña?</a>

@@ -1,62 +1,83 @@
 ion-content {
-  --background: #ffffff; /* Establece el fondo blanco */
+  --background: #ffffff;
+  /* Establece el fondo blanco */
 }
 
 .auth-logo-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .auth-logo {
-    width: 150px; /* Ajusta el tamaño del logo */
-    height: auto;
-  }
-  
-  .auth-text {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  .auth-text strong {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.auth-logo {
+  width: 150px;
+  /* Ajusta el tamaño del logo */
+  height: auto;
+}
+
+.auth-text {
+  text-align: center;
+  margin-top: 20px;
+
+  strong {
     font-size: 24px;
     font-weight: bold;
   }
-  
-  .auth-text p {
+
+  p {
     font-size: 16px;
-    color: #6c757d; /* Color de texto gris */
+    color: #6c757d;
+    /* Color de texto gris */
   }
-  
-  .auth-form {
-    padding: 20px;
-  }
-  
+}
+
+.auth-form {
+  padding: 20px;
+
   ion-item {
     --border-radius: 20px;
     --padding-start: 15px;
     margin-bottom: 15px;
+    position: relative; // Necesario para posicionar el icono dentro
 
-    // Nuevos estilos para el icono del ojo
-    ion-icon[slot="end"] {
-      font-size: 1.2rem;
-      color: #6c757d; // Usando el mismo color gris que otros elementos
-      margin-right: 5px;
-      cursor: pointer;
-      transition: color 0.3s ease;
+    ion-icon[slot="start"] {
+      color: #6c757d;
+    }
+
+    ion-input {
+      width: 100%;
+      padding-right: 40px; // Espacio para el ícono del ojo
+      --background: #f7f7f7;
+      --padding-start: 10px;
+      --border-radius: 20px;
+    }
+
+    .password-input {
+      pointer-events: none; // Permite que los clicks pasen a través del input
       
+      &::part(input) {
+        pointer-events: auto; // Restaura los eventos solo para el campo de texto
+      }
+    }
+
+    .password-toggle-icon {
+      position: absolute;
+      top: 50%;
+      right: 15px; // Ajusta este valor si es necesario
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: black; // Color negro para el ícono
+      font-size: 1.2rem;
+      z-index: 99; // Asegura que esté por encima
+      pointer-events: auto; // Habilita explícitamente los eventos del ratón
+      transition: color 0.3s ease;
+
       &:hover {
-        color: #8a2be2; // Usando el mismo color del enlace/marca
+        color: #8a2be2;
       }
     }
   }
-  
-  ion-input {
-    --background: #f7f7f7;
-    --padding-start: 10px;
-    --border-radius: 20px;
-  }
-  
+
   .forgot-password {
     text-align: right;
     display: block;
@@ -65,54 +86,57 @@ ion-content {
     font-size: 14px;
     color: #6c757d;
   }
-  
+
   .login-button {
-    --background: linear-gradient(135deg, #8a2be2, #4c46e6); /* Color degradado del botón */
+    --background: linear-gradient(135deg, #8a2be2, #4c46e6);
+    /* Color degradado del botón */
     --border-radius: 20px;
     margin-top: 10px;
   }
-  
+
   .or-divider {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 20px 0;
+
+    hr {
+      width: 30%;
+      border: none;
+      height: 1px;
+      background-color: #ddd;
+    }
+
+    span {
+      margin: 0 10px;
+      font-size: 14px;
+      color: #6c757d;
+    }
   }
-  
-  .or-divider hr {
-    width: 30%;
-    border: none;
-    height: 1px;
-    background-color: #ddd;
-  }
-  
-  .or-divider span {
-    margin: 0 10px;
-    font-size: 14px;
-    color: #6c757d;
-  }
-  
+
   .social-buttons {
     display: flex;
     justify-content: space-between;
+
+    .social-button {
+      width: 48%;
+      --border-radius: 20px;
+      --border-color: #ddd;
+    }
   }
-  
-  .social-button {
-    width: 48%;
-    --border-radius: 20px;
-    --border-color: #ddd;
-  }
-  
+
   .signup-link {
     text-align: center;
     margin-top: 20px;
+
+    p {
+      font-size: 14px;
+    }
+
+    a {
+      color: #8a2be2;
+      /* Color de enlace */
+      text-decoration: none;
+    }
   }
-  
-  .signup-link p {
-    font-size: 14px;
-  }
-  
-  .signup-link a {
-    color: #8a2be2; /* Color de enlace */
-    text-decoration: none;
-  }
+}
