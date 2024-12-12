@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { EventDetailComponent } from '../components/event-detail/event-detail.component';
-import { FirebaseService} from '../services/firebase.service';
-import { getDocs, collection} from '@angular/fire/firestore';
+import { FirebaseService } from '../services/firebase.service';
+import { getDocs, collection } from '@angular/fire/firestore';
 import { UtilsService } from '../services/utils.service';
 import { ExportToExcelService } from '../services/export-to-excel.service';
-
-
 
 @Component({
   selector: 'app-news',
@@ -31,11 +29,11 @@ export class NewsPage {
   async loadEvents() {
     const loading = await this.utilsService.loading();
     await loading.present();
-    
+
     try {
       const eventsCollection = this.firebaseService.getEvents();
       const querySnapshot = await getDocs(eventsCollection);
-  
+
       this.events = querySnapshot.docs.map((doc) => {
         return { uid: doc.id, ...doc.data() as object };
       });
@@ -51,7 +49,7 @@ export class NewsPage {
       await loading.dismiss();
     }
   }
-  
+
   async openEventDetail(event) {
     const modal = await this.modalController.create({
       component: EventDetailComponent,
@@ -67,7 +65,7 @@ export class NewsPage {
       await this.loadEvents();
     }
   }
- 
+
   downloadEvents() {
     if (this.events.length > 0) {
       this.exportToExcelService.exportAsExcel(this.events, 'EventosEasyMMeeT');
@@ -83,5 +81,4 @@ export class NewsPage {
       event.target.complete();
     }
   }
-
 }
