@@ -1,12 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title></ion-title> 
+    <ion-title></ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <div class="auth-logo-container">
-    <img src="assets/img/logo.png" alt="Logo MMT" class="auth-logo"/>
+    <img src="assets/img/logo.png" alt="Logo MMT" class="auth-logo" />
   </div>
 
   <div class="auth-text">
@@ -23,27 +23,24 @@
 
       <ion-item lines="none">
         <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-        <ion-input
-          formControlName="password"
-          [type]="showPassword ? 'text' : 'password'"
-          placeholder="Password"
+        <ion-input formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="Password"
           class="password-input">
-          <ion-icon
-          [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
-          class="password-toggle-icon"
-          (click)="togglePassword()">
-        </ion-icon>
-      </ion-input>
+          <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" class="password-toggle-icon"
+            (click)="togglePassword()">
+          </ion-icon>
+        </ion-input>
       </ion-item>
 
-      <a class="forgot-password" href="#">¿Olvidaste tu contraseña?</a>
+      <!-- Actualizar el enlace de "Olvidaste tu contraseña" -->
+      <a class="forgot-password" [routerLink]="['/authentication/forgot-password']">¿Olvidaste tu contraseña?</a>
 
-      <ion-button expand="block" color="primary" class="login-button" type="submit" [disabled]="!authForm.valid">Ingresa</ion-button>
+      <ion-button expand="block" color="primary" class="login-button" type="submit"
+        [disabled]="!authForm.valid">Ingresa</ion-button>
 
       <div class="or-divider">
-        <hr/>
+        <hr />
         <span>OR JOIN</span>
-        <hr/>
+        <hr />
       </div>
 
       <div class="social-buttons">

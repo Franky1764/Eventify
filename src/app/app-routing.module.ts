@@ -22,6 +22,10 @@ const routes: Routes = [
     loadChildren: () => import('./register/register.module').then(m => m.RegisterPageModule)
   },
   {
+    path: 'authentication/forgot-password',
+    loadChildren: () => import('./authentication/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
+  },
+  {
     path: 'tabs',
     component: TabsComponent,
     canActivate: [AuthGuard], // Protegemos la ruta 'tabs' con AuthGuard

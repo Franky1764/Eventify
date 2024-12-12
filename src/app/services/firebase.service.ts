@@ -1,6 +1,6 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { User } from '../models/user.model';
 import { Event } from '../models/event.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
@@ -22,12 +22,12 @@ import { Network } from '@capacitor/network';
   providedIn: 'root'
 })
 export class FirebaseService {
-  private pendingUpdates: {userId: string, data: any}[] = [];
+  private pendingUpdates: { userId: string, data: any }[] = [];
   private userId: string | null = null;
   private app = initializeApp(environment.firebaseConfig);
+  private auth = getAuth(this.app);
   private firebaseStorage = getStorage(this.app);
 
-  auth = inject(AngularFireAuth);
   private http = inject(HttpClient);
   firestore = inject(AngularFirestore);
   storage = inject(AngularFireStorage);
@@ -56,14 +56,14 @@ export class FirebaseService {
   hasPendingUpdates(): boolean {
     return this.pendingUpdates.length > 0;
   }
-  
+
   private queueUpdate(user: User) {
     this.pendingUpdates.push({
       userId: user.uid,
       data: user
     });
   }
-  
+
   async syncPendingUpdates() {
     if (this.pendingUpdates.length > 0) {
       for (const update of this.pendingUpdates) {
@@ -79,7 +79,7 @@ export class FirebaseService {
 
   //CRUD USUARIOS
   async signIn(email: string, password: string) {
-    const userCredential = await this.auth.signInWithEmailAndPassword(email, password);
+    const userCredential = await this.afAuth.signInWithEmailAndPassword(email, password);
     this.userId = userCredential.user?.uid;
     await this.setSession(this.userId);
     return userCredential;
@@ -87,6 +87,28 @@ export class FirebaseService {
 
   signUp(user: User) {
     return createUserWithEmailAndPassword(getAuth(), user.email, user.password);
+  }
+
+  async resetPassword(email: string): Promise<void> {
+    console.log('Iniciando proceso de reseteo para:', email);
+
+    try {
+      // Verificar si el correo existe en Firestore
+      const querySnapshot = await firstValueFrom(
+        this.firestore.collection('users', ref => ref.where('email', '==', email)).get()
+      );
+      if (querySnapshot.empty) {
+        console.error('Error: auth/user-not-found');
+        throw { code: 'auth/user-not-found' };
+      }
+
+      // Si el correo existe, enviamos el correo de restablecimiento
+      await sendPasswordResetEmail(this.auth, email);
+      console.log('Correo enviado exitosamente');
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+      throw error;
+    }
   }
 
   async getUserId(): Promise<string | null> {
@@ -131,7 +153,7 @@ export class FirebaseService {
   async updateUserInFirestore(user: User) {
     try {
       const networkStatus = await Network.getStatus();
-      
+
       if (networkStatus.connected) {
         await this.firestore.collection('users').doc(user.uid).update(user);
         return true;
@@ -150,8 +172,8 @@ export class FirebaseService {
   async downloadImageAsBase64(imageUrl: string): Promise<string> {
     try {
       // Obtener el token de autenticación
-      const token = await (await this.auth.currentUser).getIdToken();
-      
+      const token = await (await this.afAuth.currentUser).getIdToken();
+
       // Descargar la imagen directamente de la URL con el token de autenticación
       const response = await fetch(imageUrl, {
         headers: {
@@ -165,7 +187,7 @@ export class FirebaseService {
 
       // Obtener el blob de la imagen
       const blob = await response.blob();
-      
+
       // Convertir blob a base64
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -230,7 +252,7 @@ export class FirebaseService {
     const firestore = getFirestore();
     return collection(firestore, 'events');
   }
-  
+
   createEvent(event: Event) {
     const { uid, ...eventData } = event;
     return addDoc(collection(getFirestore(), 'events'), eventData);
@@ -278,7 +300,7 @@ export class FirebaseService {
         )
         .get()
         .toPromise();
-  
+
       return querySnapshot?.docs.map((doc) => ({
         uid: doc.id,
         ...doc.data(),
