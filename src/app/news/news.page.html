@@ -10,6 +10,15 @@
 
 <!-- news.page.html -->
 <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      refreshingText="Actualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
   <ng-container *ngIf="!isLoading; else loading">
     <ion-list *ngIf="events.length > 0; else noEvents">
       <ion-item *ngFor="let event of events" (click)="openEventDetail(event)">

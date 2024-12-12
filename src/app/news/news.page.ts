@@ -76,5 +76,12 @@ export class NewsPage {
     }
   }
 
-}
+  async handleRefresh(event) {
+    try {
+      await this.loadEvents();
+    } finally {
+      event.target.complete();
+    }
+  }
 
+}
