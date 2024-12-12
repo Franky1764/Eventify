@@ -2,17 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { EventDetailComponent } from '../components/event-detail/event-detail.component';
 import { FirebaseService } from '../services/firebase.service';
-import { getDocs, collection } from '@angular/fire/firestore';
 import { UtilsService } from '../services/utils.service';
 import { ExportToExcelService } from '../services/export-to-excel.service';
+import { Event } from '../models/event.model';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-news',
   templateUrl: './news.page.html',
   styleUrls: ['./news.page.scss'],
 })
-export class NewsPage {
-  events = []; // Aquí estarán los eventos traídos desde Firebase
+export class NewsPage implements OnInit {
+  events: Event[] = []; // Aquí estarán los eventos traídos desde Firebase
   isLoading = true; // Para mostrar un spinner mientras se cargan los eventos
 
   constructor(
@@ -20,6 +21,7 @@ export class NewsPage {
     private firebaseService: FirebaseService,
     private utilsService: UtilsService,
     private exportToExcelService: ExportToExcelService,
+    private firestore: AngularFirestore
   ) {}
 
   async ngOnInit() {
@@ -31,18 +33,18 @@ export class NewsPage {
     await loading.present();
 
     try {
-      const eventsCollection = this.firebaseService.getEvents();
-      const querySnapshot = await getDocs(eventsCollection);
+      const eventsCollection = this.firestore.collection<Event>('events');
+      const querySnapshot = await eventsCollection.get().toPromise();
 
       this.events = querySnapshot.docs.map((doc) => {
-        return { uid: doc.id, ...doc.data() as object };
+        return { uid: doc.id, ...doc.data() };
       });
     } catch (error) {
       console.error('Error cargando eventos:', error);
       this.utilsService.presentToast({
         message: 'Error al cargar eventos',
         color: 'danger',
-        duration: 2500
+        duration: 2500,
       });
     } finally {
       this.isLoading = false;
@@ -50,10 +52,10 @@ export class NewsPage {
     }
   }
 
-  async openEventDetail(event) {
+  async openEventDetail(event: Event) {
     const modal = await this.modalController.create({
       component: EventDetailComponent,
-      componentProps: { event: event }
+      componentProps: { event: event },
     });
 
     await modal.present();
@@ -66,11 +68,16 @@ export class NewsPage {
     }
   }
 
-  downloadEvents() {
+  async downloadEvents() {
     if (this.events.length > 0) {
-      this.exportToExcelService.exportAsExcel(this.events, 'EventosEasyMMeeT');
+      await this.exportToExcelService.exportAsExcel(this.events, 'EventosEasyMMeeT');
     } else {
       console.error('No hay eventos para descargar');
+      this.utilsService.presentToast({
+        message: 'No hay eventos para descargar',
+        color: 'danger',
+        duration: 2500,
+      });
     }
   }
 

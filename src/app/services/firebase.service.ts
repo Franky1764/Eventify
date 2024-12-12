@@ -221,8 +221,6 @@ export class FirebaseService {
     return getDoc(docRef);
   }
 
-
-
   //SUBIR IMAGEN DE PERFIL
   uploadImage(imageData: string, filePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -244,7 +242,6 @@ export class FirebaseService {
   updateProfilePhoto(userId: string, photoUrl: string) {
     return this.firestore.collection('users').doc(userId).update({ 'profilePhoto': photoUrl });
   }
-
 
   //CRUD EVENTOS
 
@@ -290,7 +287,6 @@ export class FirebaseService {
     return this.afAuth.authState;
   }
 
-
   // Obtener todos los eventos desde Firestore
   async getEventsByCategory(categoryName: string): Promise<Event[]> {
     try {
@@ -310,5 +306,4 @@ export class FirebaseService {
       return [];
     }
   }
-
 }
